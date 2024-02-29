@@ -2,54 +2,38 @@ package com.wallhack.chess;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
 
 public class PieceRender {
-    private final HashMap<String, Image> pieceBox = new HashMap<>();
+    ArrayList<Image> images = new ArrayList<>();
 
-    private final ArrayList<String> pieceNames = new ArrayList<>(List
-            .of("pawn_dark", "pawn_light", "knight_dark",
-                    "knight_light", "bishop_dark", "bishop_light",
-                    "rook_dark", "rook_light", "queen_dark", "queen_light",
-                    "king_dark", "king_light"));
+    private void loadImage(){
+        File directoryFile = new File("src/com/wallhack/chess/resources");
+        File[] files = directoryFile.listFiles();
 
-
-    private Image loadImage(String imgName){
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL url = classLoader.getResource("resources" + imgName);
-
-        //de utilizat Log4j pentru logare in viitor
-        if (url != null) {
-            try {
-                File imgFile = new File(url.toURI());
-                return ImageIO.read(imgFile);
-            }catch (URISyntaxException e){
-                e.printStackTrace();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    BufferedImage image = ImageIO.read(file);
+                    images.add(image);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        return null;
     }
 
-    private void setImage(){
-        for (String pieceName : pieceNames) {
-            if (loadImage(pieceName) != null) {
-                pieceBox.put(pieceName, loadImage(pieceName));
-            }
-        }
-
+    private void drawImage(Graphics2D g2, String piece, int x , int y, int intitialX, int initialY, int size) {
+        loadImage();
+        g2.drawImage(images.get(6), 43 ,130, size, size, null);
     }
 
-    public void drawPiece() {
-        setImage();
-        System.out.println("ceva");
+    public void drawPiece(Graphics2D g2, String name,int initialX, int initialY, int cellSize){
+        drawImage(g2, name, 1,1 ,initialX, initialY, cellSize);
     }
 
 

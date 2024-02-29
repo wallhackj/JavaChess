@@ -5,7 +5,7 @@ public class PieceFactory {
         switch (name){
             //Pawn
             case 'p' -> {
-                return new ChessPiece(ChessPiece.Player.Black, ChessPiece.Rank.Pawn, "pawn_dark.png", coordinates);
+                return new ChessPiece(ChessPiece.Player.Black, ChessPiece.Rank.Pawn, "pawn_dark", coordinates);
             }
             case 'P' -> {
                 return new ChessPiece(ChessPiece.Player.White, ChessPiece.Rank.Pawn, "pawn_light.png", coordinates);

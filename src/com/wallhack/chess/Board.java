@@ -12,16 +12,22 @@ import java.awt.event.MouseListener;
 
 public class Board extends JPanel implements ActionListener, MouseListener {
 
-    // de adugat PieceRender
+    private final PieceRender pieceRender = new PieceRender();
+    private final int cellSize = 600 / 8;
+    private final int initialX = 45;
+    private final int initialY = 55;
 
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        PieceRender pieceRender = new PieceRender();
+        PieceFactory pieceFactory = new PieceFactory();
+        ChessPiece chessPiece = pieceFactory.create('p',new Coordinates(1,1));
+
         Graphics2D g2 = (Graphics2D) g;
+        String pieceName = chessPiece.getImg();
 
         drawBoard(g2);
-        pieceRender.drawPiece();
+        pieceRender.drawPiece(g2,pieceName, initialX, initialY, cellSize);
 
     }
 
@@ -33,16 +39,13 @@ public class Board extends JPanel implements ActionListener, MouseListener {
 
                 drawSquare(g2,1 + 2 * j, 2 * i, false);
                 drawSquare(g2,2 * j, 1+ 2 * i, false);
-
             }
         }
     }
 
     private void drawSquare(Graphics2D g, int x, int y, boolean color){
-        var cellSize = 600 / 8;
-
         g.setColor(color ? Color.WHITE : Color.darkGray);
-        g.fillRect(45 + x * cellSize,55 + y * cellSize, cellSize, cellSize);
+        g.fillRect(initialX + x * cellSize,initialY + y * cellSize, cellSize, cellSize);
     }
 
 
