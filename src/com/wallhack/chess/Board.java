@@ -1,13 +1,11 @@
 package com.wallhack.chess;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 
 
 public class Board extends JPanel implements ActionListener, MouseListener {
@@ -20,14 +18,12 @@ public class Board extends JPanel implements ActionListener, MouseListener {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        PieceFactory pieceFactory = new PieceFactory();
-        ChessPiece chessPiece = pieceFactory.create('p',new Coordinates(1,1));
 
         Graphics2D g2 = (Graphics2D) g;
-        String pieceName = chessPiece.getImg();
-
         drawBoard(g2);
-        pieceRender.drawPiece(g2,pieceName, initialX, initialY, cellSize);
+        drawLabel(g2);
+
+        pieceRender.pieceByDefault(g2, cellSize);
 
     }
 
@@ -45,8 +41,30 @@ public class Board extends JPanel implements ActionListener, MouseListener {
 
     private void drawSquare(Graphics2D g, int x, int y, boolean color){
         g.setColor(color ? Color.WHITE : Color.darkGray);
-        g.fillRect(initialX + x * cellSize,initialY + y * cellSize, cellSize, cellSize);
+        g.fillRect(initialX + x * cellSize, initialY + y * cellSize, cellSize, cellSize);
     }
+
+    private void drawLabel(Graphics2D g2){
+        char[] litere = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+        char[] cifre = {'1', '2', '3', '4', '5', '6', '7', '8'};
+
+        Font font = new Font("default", Font.BOLD, 20);
+        g2.setFont(font);
+
+        var pozitionX = initialX;
+        var pozitionY = initialY;
+
+        for(int i = 0; i < litere.length; i++){
+            g2.drawChars(litere, i, 1, pozitionX + 30, pozitionY - 10);
+            pozitionX += 75;
+        }
+        for(int i = 0; i < cifre.length; i++){
+            g2.drawChars(cifre, i, 1, pozitionX - 625, pozitionY + 45);
+            pozitionY += 75;
+        }
+    }
+
+
 
 
     @Override

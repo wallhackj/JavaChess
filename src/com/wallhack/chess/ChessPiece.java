@@ -10,13 +10,13 @@ public class ChessPiece {
 
     private final Player player;
     private final Rank rank;
-    private final String img;
+    private final int index;
     private final Coordinates coordinates;
 
-    public ChessPiece(Player player, Rank rank, String img, Coordinates coordinates) {
+    public ChessPiece(Player player, Rank rank, int index, Coordinates coordinates) {
         this.player = player;
         this.rank = rank;
-        this.img = img;
+        this.index = index;
         this.coordinates = coordinates;
     }
 
@@ -28,8 +28,8 @@ public class ChessPiece {
         return rank;
     }
 
-    public String getImg() {
-        return img;
+    public int getIndex() {
+        return index;
     }
 
     public Coordinates getCoordinates() {

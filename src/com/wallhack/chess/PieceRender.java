@@ -27,13 +27,45 @@ public class PieceRender {
         }
     }
 
-    private void drawImage(Graphics2D g2, String piece, int x , int y, int intitialX, int initialY, int size) {
+    private void drawImage(Graphics2D g2, int pieceIndex, int x , int y, int size) {
         loadImage();
-        g2.drawImage(images.get(6), 43 ,130, size, size, null);
+        try {
+            int primeX = 45;
+            int primeY = 55;
+            g2.drawImage(images.get(pieceIndex), primeX + (size * x), primeY + (size * y), size, size, null);
+        }catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+        }
+
     }
 
-    public void drawPiece(Graphics2D g2, String name,int initialX, int initialY, int cellSize){
-        drawImage(g2, name, 1,1 ,initialX, initialY, cellSize);
+    public void drawPiece(Graphics2D g2, int index, int initialX, int initialY, int cellSize){
+        drawImage(g2, index, initialX, initialY, cellSize);
+    }
+
+    public void pieceByDefault (Graphics2D g2, int cellSize) {
+        PieceFactory pieceFactory = new PieceFactory();
+
+        char[][] defaultPositions = {
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
+        };
+
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                char pieceType = defaultPositions[y][x];
+                if (pieceType != ' ') {
+                    ChessPiece piece = pieceFactory.create(pieceType, new Coordinates(x, y));
+                    drawPiece(g2, piece.getIndex(), piece.getCoordinates().getPos_X(), piece.getCoordinates().getPos_Y(), cellSize);
+                }
+            }
+        }
     }
 
 
