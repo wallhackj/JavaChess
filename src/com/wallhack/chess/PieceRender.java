@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class PieceRender {
     ArrayList<Image> images = new ArrayList<>();
-
+    ArrayList<ChessPiece> piecesBox = new ArrayList<>();
     private void loadImage(){
         File directoryFile = new File("src/com/wallhack/chess/resources");
         File[] files = directoryFile.listFiles();
@@ -62,6 +62,7 @@ public class PieceRender {
                 char pieceType = defaultPositions[y][x];
                 if (pieceType != ' ') {
                     ChessPiece piece = pieceFactory.create(pieceType, new Coordinates(x, y));
+                    piecesBox.add(piece);
                     drawPiece(g2, piece.getIndex(), piece.getCoordinates().getPos_X(), piece.getCoordinates().getPos_Y(), cellSize);
                 }
             }

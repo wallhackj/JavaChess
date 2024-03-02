@@ -2,18 +2,18 @@ package com.wallhack.chess;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 
-public class Board extends JPanel implements ActionListener, MouseListener {
+public class Board extends JPanel implements MouseMotionListener, MouseListener {
 
     private final PieceRender pieceRender = new PieceRender();
     private final int cellSize = 600 / 8;
     private final int initialX = 45;
     private final int initialY = 55;
+
+    private int pieceLocationIndex;
+    private Point movingPiece;
 
     @Override
     protected void paintComponent(Graphics g){
@@ -65,8 +65,6 @@ public class Board extends JPanel implements ActionListener, MouseListener {
     }
 
 
-
-
     @Override
     public void mouseClicked(MouseEvent e) {
 
@@ -74,12 +72,38 @@ public class Board extends JPanel implements ActionListener, MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        var actualX = (e.getPoint().x - initialX) / cellSize;
+        var actualY = (e.getPoint().y - initialY) / cellSize;
 
+        for (int i = 0; i < pieceRender.piecesBox.size(); i++) {
+            if (pieceRender.piecesBox.get(i).getCoordinates().getPos_X() == actualX
+                    && pieceRender.piecesBox.get(i).getCoordinates().getPos_Y() == actualY){
+                        pieceLocationIndex = i;
+            }
+
+        }
+
+        movingPiece = e.getPoint();
+        repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        var actualX = (e.getPoint().x - initialX) / cellSize;
+        var actualY = (e.getPoint().y - initialY) / cellSize;
 
+        pieceRender.piecesBox.get(pieceLocationIndex).getCoordinates().setPos_X(actualX);
+        pieceRender.piecesBox.get(pieceLocationIndex).getCoordinates().setPos_Y(actualY);
+
+        movingPiece = null;
+
+        repaint();
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        movingPiece = e.getPoint();
+        repaint();
     }
 
     @Override
@@ -92,11 +116,12 @@ public class Board extends JPanel implements ActionListener, MouseListener {
 
     }
 
+
+
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void mouseMoved(MouseEvent e) {
 
     }
-    //De utilizat mai mult multithreading
     public static void main(String[] args) {
 
         Thread t1 = new Thread(() -> {
