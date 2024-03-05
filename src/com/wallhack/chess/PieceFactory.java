@@ -1,7 +1,9 @@
 package com.wallhack.chess;
 
+import java.awt.*;
+
 public class PieceFactory {
-    public ChessPiece create (char name, Coordinates coordinates){
+    public ChessPiece create (char name, Point coordinates){
         switch (name){
             //Pawn
             case 'p' -> {
