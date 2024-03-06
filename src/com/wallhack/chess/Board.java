@@ -2,17 +2,13 @@ package com.wallhack.chess;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicTreeUI;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.Scanner;
 import javax.swing.JLabel;
 
 
-public class Board extends JPanel{
+public class Board extends JPanel {
 
     private final int cellSize = 80;
     private final int initialX = 45;
@@ -23,11 +19,13 @@ public class Board extends JPanel{
     BoardRender boardRender;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Chess Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new Board());
-        frame.setSize(800,800);
-        frame.setVisible(true);
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new JFrame("Chess Game");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.add(new Board());
+            frame.setSize(800,800);
+            frame.setVisible(true);
+        });
 
     }
 
@@ -36,11 +34,11 @@ public class Board extends JPanel{
         PieceFactory pieceFactory = new PieceFactory();
         boardRender = new BoardRender(initialX, initialY, cellSize);
 
-        pawn_black = pieceFactory.create('p', new Point(0, 2));
+        pawn_black = pieceFactory.create('p', new Point(0, 1));
 
         JLabel piece_pawn_black = new JLabel();
         try {
-            piece_pawn_black.setIcon(new ImageIcon(ImageIO.read(getClass().getResource("pawn_dark.png"))));
+            piece_pawn_black.setIcon(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getResource("pawn_dark.png")))));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Randul 80!");
@@ -80,9 +78,17 @@ public class Board extends JPanel{
         }
         return point;
     }
+    public Point gridToPoint(Point grid) {
+        Point p = new Point();
+        if (grid != null) {
+            p.x = grid.x * cellSize + initialX;
+            p.y = grid.y * cellSize + initialY;
+        }
+        return p;
+    }
 
     public void setPieceGrid(Component comp, Point grid) {
- //       ((BoardLayoutManager) getLayout()).setPieceGrid(comp, grid);
+        ((BoardLayoutManager) getLayout()).setPieceGrid(comp, grid);
         invalidate();
         revalidate();
         repaint();

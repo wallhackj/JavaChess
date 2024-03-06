@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 public class MouseHandler extends MouseAdapter {
 
     private Component dragComponent;
-    private Board board;
+    private final Board board;
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
 
@@ -47,8 +47,8 @@ public class MouseHandler extends MouseAdapter {
             Board board = getBoard();
             Point grid = board.pointToGrid(e.getPoint());
             if (SNAP_TO_GRID) {
-           //     Point p = board.gridToPoint(grid);
-           //     dragComponent.setLocation(p);
+                Point p = board.gridToPoint(grid);
+                dragComponent.setLocation(p);
             } else {
                 Point dragPoint = new Point();
                 dragPoint.x = e.getPoint().x - dragOffset.x;
