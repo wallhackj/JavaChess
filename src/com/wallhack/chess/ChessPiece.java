@@ -1,5 +1,7 @@
 package com.wallhack.chess;
 
+import java.awt.*;
+
 public class ChessPiece {
     public enum Player {
         White, Black
@@ -10,13 +12,13 @@ public class ChessPiece {
 
     private final Player player;
     private final Rank rank;
-    private final int index;
-    private final Coordinates coordinates;
+    private final String name;
+    private final Point coordinates;
 
-    public ChessPiece(Player player, Rank rank, int index, Coordinates coordinates) {
+    public ChessPiece(Player player, Rank rank, String name, Point coordinates) {
         this.player = player;
         this.rank = rank;
-        this.index = index;
+        this.name = name;
         this.coordinates = coordinates;
     }
 
@@ -28,11 +30,11 @@ public class ChessPiece {
         return rank;
     }
 
-    public int getIndex() {
-        return index;
+    public String getIndex() {
+        return name;
     }
 
-    public Coordinates getCoordinates() {
+    public Point getCoordinates() {
         return coordinates;
     }
 }
