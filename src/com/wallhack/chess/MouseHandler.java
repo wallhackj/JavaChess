@@ -39,6 +39,7 @@ public class MouseHandler extends MouseAdapter {
             board.setPieceGrid(dragComponent, p);
 
             dragComponent = null;
+            board.setHightlightCell(null);
         }
     }
     @Override
@@ -55,6 +56,7 @@ public class MouseHandler extends MouseAdapter {
                 dragPoint.y = e.getPoint().y - dragOffset.y;
                 dragComponent.setLocation(dragPoint);
             }
+            board.setHightlightCell(grid);
         }
     }
   //  https://stackoverflow.com/questions/13698217/how-to-make-draggable-components-with-imageicon/13700490#13700490

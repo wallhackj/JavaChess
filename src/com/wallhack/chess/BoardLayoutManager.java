@@ -18,7 +18,7 @@ public class BoardLayoutManager implements LayoutManager2 {
 
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
-        if (constraints instanceof Point) {
+        if (constraints == null || constraints instanceof Point) {
             mapGrid.put(comp, (Point) constraints);
         } else {
             throw new IllegalArgumentException("Unexpected constraints, expected java.awt.Point, got " + constraints);
@@ -65,15 +65,14 @@ public class BoardLayoutManager implements LayoutManager2 {
 
     @Override
     public void layoutContainer(Container parent) {
+        Point offset = ((Board) parent).getBoardOffset();
         for (Component comp : parent.getComponents()) {
             Point p = mapGrid.get(comp);
             if (p == null) {
                 comp.setBounds(0, 0, 0, 0); // Remove from sight :P
             } else {
-                int initialX = 45;
-                int x = p.x * GRID_SIZE + initialX;
-                int initialY = 55;
-                int y = p.y * GRID_SIZE + initialY;
+                int x = p.x * GRID_SIZE + offset.x;
+                int y = p.y * GRID_SIZE + offset.y;
                 comp.setBounds(x, y, GRID_SIZE, GRID_SIZE);
             }
         }
