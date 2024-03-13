@@ -69,7 +69,7 @@ public class BoardLayoutManager implements LayoutManager2 {
         for (Component comp : parent.getComponents()) {
             Point p = mapGrid.get(comp);
             if (p == null) {
-                comp.setBounds(0, 0, 0, 0); // Remove from sight :P
+                comp.setBounds(0, 0, 0, 0);
             } else {
                 int x = p.x * GRID_SIZE + offset.x;
                 int y = p.y * GRID_SIZE + offset.y;

@@ -4,14 +4,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import javax.swing.JLabel;
 
-
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    private final HashMap<String, ChessPiece> pieceBox = new HashMap<>(32);
+    public final HashMap<String, ChessPiece> pieceBox = new HashMap<>(32);
 
     public HashMap<String, JLabel> pieceLabels = new HashMap<>(32);
     private final int cellSize = 80;
@@ -19,6 +19,7 @@ public class Board extends JPanel {
     private final int initialY = 60;
     private Point highlightCell;
     private final BoardRender boardRender;
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Chess Game");
@@ -46,13 +47,13 @@ public class Board extends JPanel {
             JLabel label = pieceLabels.get(piece);
             ChessPiece chessPiece = pieceBox.get(piece);
             if (label != null && chessPiece != null) {
-                Point pieceCoordinates = new Point(chessPiece.getCoordinates().y, chessPiece.getCoordinates().x);
+                Point pieceCoordinates = new Point(chessPiece.getCoordinates().x, chessPiece.getCoordinates().y);
                 add(label , pieceCoordinates);
             }
         }
 
 
-        MouseHandler mouseHandler = new MouseHandler(this);
+        MouseHandler mouseHandler = new MouseHandler(this, new GameRules(this));
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
@@ -78,7 +79,9 @@ public class Board extends JPanel {
         JLabel label = new JLabel();
 
         try {
-            label.setIcon(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getResource(pieceBox.get(piece).getIndex())))));
+            String imagePath = "com/wallhack/chess/resources/" + pieceBox.get(piece).getIndex();
+            label.setIcon(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource(imagePath)))));
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Eroare la citirea imaginii!");
@@ -93,20 +96,20 @@ public class Board extends JPanel {
 
     private void pieceByDefault () {
         String[][] defaultPositions = {
-                {"LR1", "LN1", "LB1", "LQ", "LK", "LB2", "LN2", "LR2"},
-                {"LP1", "LP2", "LP3", "LP4", "LP5", "LP6", "LP7", "LP8"},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {"Br1", "Bn1", "Bb1", "Bq", "Bk", "Bb2", "Bn2", "Br2"},
                 {"Bp1", "Bp2", "Bp3", "Bp4", "Bp5", "Bp6", "Bp7", "Bp8"},
-                {"Br1", "Bn1", "Bb1", "Bq", "Bk", "Bb2", "Bn2", "Br2"}
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {" ", " ", " ", " ", " ", " ", " ", " "},
+                {"LP1", "LP2", "LP3", "LP4", "LP5", "LP6", "LP7", "LP8"},
+                {"LR1", "LN1", "LB1", "LQ", "LK", "LB2", "LN2", "LR2"}
         };
         for (int i = 0; i < defaultPositions.length; i++) {
             for (int j = 0; j < defaultPositions.length; j++) {
                 String pieceType = defaultPositions[i][j];
                 if (!pieceType.equals(" ")) {
-                    pieceBox.put(pieceType, pieceFactory.create(pieceType.charAt(1), new Point(i, j)));
+                    pieceBox.put(pieceType, pieceFactory.create(pieceType.charAt(1), new Point(j, i)));
                 }
             }
         }
@@ -147,6 +150,19 @@ public class Board extends JPanel {
 
         return p;
     }
+    public ChessPiece getPieceAt(Point coordinates){
+        Collection<ChessPiece> pieces = pieceBox.values();
+        ChessPiece myPiece = null;
+
+        for (ChessPiece piece : pieces){
+            if (piece.getCoordinates().equals(pointToGrid(coordinates))){
+                myPiece = piece;
+                break;
+            }
+        }
+        return myPiece;
+    }
+
 
     public void setHightlightCell(Point p) {
         if (highlightCell != p) {
