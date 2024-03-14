@@ -4,15 +4,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JLabel;
 
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    public final HashMap<String, ChessPiece> pieceBox = new HashMap<>(32);
-
+    public ConcurrentHashMap<String, ChessPiece> pieceBox = new ConcurrentHashMap<>(32);
     public HashMap<String, JLabel> pieceLabels = new HashMap<>(32);
     private final int cellSize = 80;
     private final int initialX = 63;
@@ -22,14 +21,15 @@ public class Board extends JPanel {
 
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Chess Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        frame.add(new Board());
-        frame.setSize(800,800);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new JFrame("Chess Game");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLayout(new BorderLayout());
+            frame.add(new Board());
+            frame.setSize(800,800);
+            frame.setResizable(false);
+            frame.setVisible(true);
+        });
     }
 
     public Board() {
@@ -151,13 +151,11 @@ public class Board extends JPanel {
         return p;
     }
     public ChessPiece getPieceAt(Point coordinates){
-        Collection<ChessPiece> pieces = pieceBox.values();
         ChessPiece myPiece = null;
 
-        for (ChessPiece piece : pieces){
-            if (piece.getCoordinates().equals(pointToGrid(coordinates))){
+        for (ChessPiece piece : pieceBox.values()){
+            if (piece.getCoordinates().x == coordinates.x && coordinates.y == piece.getCoordinates().y){
                 myPiece = piece;
-                break;
             }
         }
         return myPiece;

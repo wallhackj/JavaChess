@@ -9,44 +9,37 @@ public class GameRules {
         this.board = board;
     }
 
-    private boolean isValidPawnMove(ChessPiece pawn, Point coord, Point initial) {
-        // Implementează logica pentru mișcarea pionului
-        return true; // Placeholder, înlocuiește cu logica reală
+
+
+    private boolean isValidPawnMove(Point coord, Point initial) {
+        int deltaY = initial.y - coord.y;
+
+        return (deltaY == 1 || deltaY == 2) && coord.x == initial.x;
     }
 
-    private boolean isValidKnightMove(ChessPiece knight, Point coord, Point initial) {
-        // Implementează logica pentru mișcarea călărețului
-        return true; // Placeholder, înlocuiește cu logica reală
+
+
+    private boolean isValidKnightMove(Point coord, Point initial) {
+
+        return true;
     }
 
-    private boolean isValidRookMove(ChessPiece rook, Point coord, Point initial) {
-        // Implementează logica pentru mișcarea turnului
-        return true; // Placeholder, înlocuiește cu logica reală
+    private boolean isValidRookMove(Point coord, Point initial) {
+
+        return true;
     }
 
-// Implementează metode similare pentru Bishop, Queen și King
 
-    public boolean isAllowed(Component dragComponent, Point coord, Point initial) {
-        boolean allowed = true;
-        try {
-            ChessPiece piece = board.getPieceAt(dragComponent.getLocation());
 
-            System.out.println(board.getPieceAt(dragComponent.getLocation()).getRank());
+    public boolean isAllowed(ChessPiece piece,Point coord, Point initial) {
 
-            if (piece != null) {
-                switch (piece.getRank()) {
-                    case Rook:
-                        return allowed = isValidPawnMove(piece, coord, initial);
-                    default:
-                        return allowed = false; // Poate fi deplasată în mod implicit
-                }
-            }
+        System.out.println(piece.getCoordinates());
 
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-
-        return allowed; // Dacă nu este găsită nicio piesă
+        return switch (piece.getRank()) {
+            case Pawn -> isValidPawnMove(coord, initial);
+            case Rook -> isValidRookMove(coord, initial);
+            case King -> isValidKnightMove(coord, initial);
+            default -> false; // Poate fi deplasată în mod implicit
+        };
     }
-
 }

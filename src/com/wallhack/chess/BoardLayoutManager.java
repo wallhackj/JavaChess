@@ -9,7 +9,7 @@ public class BoardLayoutManager implements LayoutManager2 {
     private final int GRID_SIZE = 80;
 
     public BoardLayoutManager() {
-        mapGrid = new HashMap<>(25);
+        mapGrid = new HashMap<>(32);
     }
 
     public void setPieceGrid(Component comp, Point grid) {

@@ -12,7 +12,6 @@ public class MouseHandler extends MouseAdapter {
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
     private Point dragOffsetToPoint;
-    private ChessPiece piece;
 
     public MouseHandler(Board board, GameRules gameRules) {
         this.board = board;
@@ -45,11 +44,14 @@ public class MouseHandler extends MouseAdapter {
             Point p = board.pointToGrid(e.getPoint());
 
            if (p != null && board.contains(p)){
-               if (gameRules.isAllowed(dragComponent, p, dragOffsetToPoint)) {
+               ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
+               if (gameRules.isAllowed(piece, p, dragOffsetToPoint)) {
                    System.out.println(p + " " + dragOffsetToPoint);
-                   piece = board.getPieceAt(dragOffsetToPoint);
                    piece.getCoordinates().setLocation(p);
                    board.setPieceGrid(dragComponent, p);
+               }else {
+                   board.setPieceGrid(dragComponent, dragOffsetToPoint);
+                   piece.getCoordinates().setLocation(dragOffsetToPoint);
                }
            }
             dragComponent = null;
