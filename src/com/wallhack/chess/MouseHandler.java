@@ -8,11 +8,14 @@ public class MouseHandler extends MouseAdapter {
 
     private Component dragComponent;
     private final Board board;
+    private final PieceMoves pieceMoves;
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
+    private Point dragOffsetToPoint;
 
-    public MouseHandler(Board board) {
+    public MouseHandler(Board board, PieceMoves pieceMoves) {
         this.board = board;
+        this.pieceMoves = pieceMoves;
     }
 
     public Board getBoard() {
@@ -22,21 +25,32 @@ public class MouseHandler extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
+
         if (comp != null) {
             dragComponent = comp;
             dragOffset = new Point();
             dragOffset.x = e.getPoint().x - comp.getX();
             dragOffset.y = e.getPoint().y - comp.getY();
+
+            dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (dragComponent != null) {
+            getBoard().setEnabled(true);
             Board board = getBoard();
             Point p = board.pointToGrid(e.getPoint());
-            System.out.println(p);
-            board.setPieceGrid(dragComponent, p);
+            ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
+
+            if (p != null && pieceMoves.isAllowed(piece, p, dragOffsetToPoint)){
+                piece.getCoordinates().setLocation(p);
+                board.setPieceGrid(dragComponent, p);
+            }else {
+                board.setPieceGrid(dragComponent, dragOffsetToPoint);
+                piece.getCoordinates().setLocation(dragOffsetToPoint);
+            }
 
             dragComponent = null;
             board.setHightlightCell(null);
@@ -54,10 +68,10 @@ public class MouseHandler extends MouseAdapter {
                 Point dragPoint = new Point();
                 dragPoint.x = e.getPoint().x - dragOffset.x;
                 dragPoint.y = e.getPoint().y - dragOffset.y;
+
                 dragComponent.setLocation(dragPoint);
             }
             board.setHightlightCell(grid);
         }
     }
-  //  https://stackoverflow.com/questions/13698217/how-to-make-draggable-components-with-imageicon/13700490#13700490
 }

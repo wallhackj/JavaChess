@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BoardLayoutManager implements LayoutManager2 {
-    private final Map<Component, Point> mapGrid;
+    public final Map<Component, Point> mapGrid;
     private final int GRID_SIZE = 80;
 
     public BoardLayoutManager() {
-        mapGrid = new HashMap<>(25);
+        mapGrid = new HashMap<>(32);
     }
 
     public void setPieceGrid(Component comp, Point grid) {
@@ -69,7 +69,7 @@ public class BoardLayoutManager implements LayoutManager2 {
         for (Component comp : parent.getComponents()) {
             Point p = mapGrid.get(comp);
             if (p == null) {
-                comp.setBounds(0, 0, 0, 0); // Remove from sight :P
+                comp.setBounds(0, 0, 0, 0);
             } else {
                 int x = p.x * GRID_SIZE + offset.x;
                 int y = p.y * GRID_SIZE + offset.y;
