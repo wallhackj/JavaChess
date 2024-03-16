@@ -8,14 +8,14 @@ public class MouseHandler extends MouseAdapter {
 
     private Component dragComponent;
     private final Board board;
-    private final GameRules gameRules;
+    private final PieceMoves pieceMoves;
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
     private Point dragOffsetToPoint;
 
-    public MouseHandler(Board board, GameRules gameRules) {
+    public MouseHandler(Board board, PieceMoves pieceMoves) {
         this.board = board;
-        this.gameRules = gameRules;
+        this.pieceMoves = pieceMoves;
     }
 
     public Board getBoard() {
@@ -42,18 +42,16 @@ public class MouseHandler extends MouseAdapter {
             getBoard().setEnabled(true);
             Board board = getBoard();
             Point p = board.pointToGrid(e.getPoint());
+            ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
 
-           if (p != null && board.contains(p)){
-               ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
-               if (gameRules.isAllowed(piece, p, dragOffsetToPoint)) {
-                   System.out.println(p + " " + dragOffsetToPoint);
-                   piece.getCoordinates().setLocation(p);
-                   board.setPieceGrid(dragComponent, p);
-               }else {
-                   board.setPieceGrid(dragComponent, dragOffsetToPoint);
-                   piece.getCoordinates().setLocation(dragOffsetToPoint);
-               }
-           }
+            if (p != null && pieceMoves.isAllowed(piece, p, dragOffsetToPoint)){
+                piece.getCoordinates().setLocation(p);
+                board.setPieceGrid(dragComponent, p);
+            }else {
+                board.setPieceGrid(dragComponent, dragOffsetToPoint);
+                piece.getCoordinates().setLocation(dragOffsetToPoint);
+            }
+
             dragComponent = null;
             board.setHightlightCell(null);
         }

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BoardLayoutManager implements LayoutManager2 {
-    private final Map<Component, Point> mapGrid;
+    public final Map<Component, Point> mapGrid;
     private final int GRID_SIZE = 80;
 
     public BoardLayoutManager() {

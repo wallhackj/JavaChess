@@ -16,21 +16,8 @@ public class Board extends JPanel {
     private final int cellSize = 80;
     private final int initialX = 63;
     private final int initialY = 60;
-    private Point highlightCell;
     private final BoardRender boardRender;
-
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            JFrame frame = new JFrame("Chess Game");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLayout(new BorderLayout());
-            frame.add(new Board());
-            frame.setSize(800,800);
-            frame.setResizable(false);
-            frame.setVisible(true);
-        });
-    }
+    private Point highlightCell;
 
     public Board() {
         setLayout(new BoardLayoutManager());
@@ -53,7 +40,7 @@ public class Board extends JPanel {
         }
 
 
-        MouseHandler mouseHandler = new MouseHandler(this, new GameRules(this));
+        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this));
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
