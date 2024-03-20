@@ -5,14 +5,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JLabel;
 
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    public ConcurrentHashMap<String, ChessPiece> pieceBox = new ConcurrentHashMap<>(32);
-    public HashMap<String, JLabel> pieceLabels = new HashMap<>(32);
+    public ConcurrentHashMap<String, ChessPiece> pieceBox = new ConcurrentHashMap<>();
+    public HashMap<String, JLabel> pieceLabels = new HashMap<>();
     private final int cellSize = 80;
     private final int initialX = 63;
     private final int initialY = 60;
@@ -45,7 +46,14 @@ public class Board extends JPanel {
         addMouseMotionListener(mouseHandler);
 
     }
-
+    public static <K, V> K getKeyFromValue(Map<K, V> map, V value) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -128,6 +136,26 @@ public class Board extends JPanel {
         revalidate();
         repaint();
     }
+
+    public void deleteChessPiece(ChessPiece piece) {
+    if (piece != null) {
+        String key = getKeyFromValue(pieceBox, piece);
+        if (key != null) {
+            JLabel label = pieceLabels.get(key);
+            if (label != null) {
+                remove(label);
+            }
+            pieceBox.remove(key);
+            pieceLabels.remove(key);
+
+        }
+    }
+
+    revalidate();
+    repaint();
+}
+
+
     protected Point getBoardOffset() {
         int width = getWidth();
         int height = getHeight();

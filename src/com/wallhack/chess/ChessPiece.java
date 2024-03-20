@@ -15,6 +15,7 @@ public class ChessPiece {
     private final String name;
     private final Point coordinates;
 
+
     public ChessPiece(Player player, Rank rank, String name, Point coordinates) {
         this.player = player;
         this.rank = rank;
@@ -37,4 +38,5 @@ public class ChessPiece {
     public Point getCoordinates() {
         return coordinates;
     }
+
 }

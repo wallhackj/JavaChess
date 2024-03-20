@@ -43,19 +43,26 @@ public class MouseHandler extends MouseAdapter {
             Board board = getBoard();
             Point p = board.pointToGrid(e.getPoint());
             ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
+            ChessPiece pieceAt = board.getPieceAt(p);
 
-            if (p != null && pieceMoves.isAllowed(piece, p, dragOffsetToPoint)){
+            if (p != null && pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
+                board.deleteChessPiece(pieceAt);
                 piece.getCoordinates().setLocation(p);
                 board.setPieceGrid(dragComponent, p);
-            }else {
+
+            } else {
                 board.setPieceGrid(dragComponent, dragOffsetToPoint);
-                piece.getCoordinates().setLocation(dragOffsetToPoint);
+                if (piece != null) {
+                    piece.getCoordinates().setLocation(dragOffsetToPoint);
+                }
             }
 
             dragComponent = null;
             board.setHightlightCell(null);
         }
     }
+
+
     @Override
     public void mouseDragged(MouseEvent e) {
         if (dragComponent != null) {
