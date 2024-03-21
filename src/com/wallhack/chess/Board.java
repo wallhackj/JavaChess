@@ -41,7 +41,7 @@ public class Board extends JPanel {
         }
 
 
-        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this));
+        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this), new ChessCheck(this));
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
@@ -155,7 +155,6 @@ public class Board extends JPanel {
     repaint();
 }
 
-
     protected Point getBoardOffset() {
         int width = getWidth();
         int height = getHeight();
@@ -175,8 +174,6 @@ public class Board extends JPanel {
         }
         return myPiece;
     }
-
-
     public void setHightlightCell(Point p) {
         if (highlightCell != p) {
             highlightCell = p;

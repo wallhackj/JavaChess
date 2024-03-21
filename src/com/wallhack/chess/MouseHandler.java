@@ -12,10 +12,12 @@ public class MouseHandler extends MouseAdapter {
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
     private Point dragOffsetToPoint;
+    private final ChessCheck chessCheck;
 
-    public MouseHandler(Board board, PieceMoves pieceMoves) {
+    public MouseHandler(Board board, PieceMoves pieceMoves, ChessCheck chessCheck) {
         this.board = board;
         this.pieceMoves = pieceMoves;
+        this.chessCheck = chessCheck;
     }
 
     public Board getBoard() {
@@ -26,20 +28,21 @@ public class MouseHandler extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
 
-        if (comp != null) {
-            dragComponent = comp;
-            dragOffset = new Point();
-            dragOffset.x = e.getPoint().x - comp.getX();
-            dragOffset.y = e.getPoint().y - comp.getY();
+        if (chessCheck.isCheckmate().equals(ChessCheck.GameState.ONGOING)) {
+            if (comp != null) {
+                dragComponent = comp;
+                dragOffset = new Point();
+                dragOffset.x = e.getPoint().x - comp.getX();
+                dragOffset.y = e.getPoint().y - comp.getY();
 
-            dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
-        }
+                dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
+            }
+        } else chessCheck.endMenu();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (dragComponent != null) {
-            getBoard().setEnabled(true);
             Board board = getBoard();
             Point p = board.pointToGrid(e.getPoint());
             ChessPiece piece = board.getPieceAt(dragOffsetToPoint);

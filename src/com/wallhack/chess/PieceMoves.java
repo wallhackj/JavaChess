@@ -179,8 +179,8 @@ public class PieceMoves {
 
 
     public boolean isAllowed(ChessPiece piece,Point coord, Point initial) {
-
         System.out.println(piece.getCoordinates());
+        System.out.println(board.pointToGrid(board.getBoardOffset()));
 
         return switch (piece.getRank()) {
             case Pawn -> isValidPawnMove(coord, initial);
