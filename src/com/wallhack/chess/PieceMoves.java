@@ -1,12 +1,13 @@
 package com.wallhack.chess;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PieceMoves {
     private final Board board;
-    private final List<ChessPiece> movedPawns = new ArrayList<>();
+    private final Set<ChessPiece> movedPieces = new HashSet<>();
+    private ChessPiece rook;
 
     public PieceMoves(Board board) {
         this.board = board;
@@ -47,22 +48,16 @@ public class PieceMoves {
     private boolean isNotKing(ChessPiece piece){
         return !piece.getRank().equals(ChessPiece.Rank.King);
     }
-    private void pawnToArray(ChessPiece piece){
-        if(piece.getRank().equals(ChessPiece.Rank.Pawn)){
-            movedPawns.add(piece);
-        }
-    }
 
-    private boolean pawnIsMoved(ChessPiece piece){
+    private boolean pieceIsMoved(ChessPiece piece){
         var isLegal = false;
-        if(piece.getRank().equals(ChessPiece.Rank.Pawn)){
-            for (ChessPiece pawns : movedPawns){
+            for (ChessPiece pawns : movedPieces){
                 if (pawns.equals(piece)) {
                     isLegal = true;
                     break;
                 }
             }
-        }
+
         return isLegal;
     }
     private boolean isValidPawnMove(Point coord, Point initial) {
@@ -76,17 +71,17 @@ public class PieceMoves {
 
         if (piece == null) {
             if (initialPiece.getPlayer() == ChessPiece.Player.White ) {
-                if ((deltaY == 2 || deltaY == 1) && coord.x == initial.x && !pawnIsMoved(initialPiece)) {
-                    pawnToArray(initialPiece);
+                if ((deltaY == 2 || deltaY == 1) && coord.x == initial.x && !pieceIsMoved(initialPiece)) {
+                    movedPieces.add(initialPiece);
                     validation = true;
-                }else if (deltaY == 1 && pawnIsMoved(initialPiece)){
+                }else if (deltaY == 1 && pieceIsMoved(initialPiece)){
                     validation = true;
                 }
             } else if (initialPiece.getPlayer() == ChessPiece.Player.Black) {
-                if ((deltaY == -1 || deltaY == -2) && coord.x == initial.x && !pawnIsMoved(initialPiece)) {
-                    pawnToArray(initialPiece);
+                if ((deltaY == -1 || deltaY == -2) && coord.x == initial.x && !pieceIsMoved(initialPiece)) {
+                    movedPieces.add(initialPiece);
                     validation = true;
-                } else if (deltaY == -1 && pawnIsMoved(initialPiece)) {
+                } else if (deltaY == -1 && pieceIsMoved(initialPiece)) {
                     validation = true;
                 }
             }
@@ -132,7 +127,8 @@ public class PieceMoves {
         if (piece == null || piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece)){
             if (coord.x == initial.x || coord.y == initial.y) {
                 if (isPathClear(initial, coord)) {
-                        validation = true;
+                    movedPieces.add(initialPiece);
+                    validation = true;
                 }
             }
 
@@ -160,27 +156,64 @@ public class PieceMoves {
         return isValidBishopMove(coord , initial) || isValidRookMove(coord , initial);
     }
 
+    private boolean isValidCasling(Point coord, Point initial) {
+        ChessPiece initialPiece = board.getPieceAt(initial);
+        Point leftRook = new Point(0, initial.y);
+        Point rightRook = new Point(7, initial.y);
+
+        var valid = false;
+        var deltaX = Math.abs(initial.x - coord.x);
+        var deltaY = Math.abs(initial.y - coord.y);
+
+        if (deltaY == 0 && deltaX == 2) {
+            if (isPathClear(coord, initial) && !pieceIsMoved(initialPiece)) {
+                ChessPiece leftRookPiece = board.getPieceAt(leftRook);
+                ChessPiece rightRookPiece = board.getPieceAt(rightRook);
+                if ((!pieceIsMoved(leftRookPiece))) {
+                    valid = true;
+                    rook = rightRookPiece;
+                }else if (!pieceIsMoved(rightRookPiece)){
+                    valid = true;
+                    rook = leftRookPiece;
+                }
+            }
+        }
+        return valid;
+    }
+
+
     private boolean isValidKingMove(Point coord, Point initial) {
         ChessPiece piece = board.getPieceAt(coord);
         ChessPiece initialPiece = board.getPieceAt(initial);
         var validation = false;
 
-        if (piece == null || piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece)){
+        if (isValidCasling(coord, initial)) {
+            validation = true;
+            if (coord.x == initial.x + 2) {
+                board.deleteChessPiece(rook);
+            }
+            else if (coord.x == initial.x - 2) {
+                board.deleteChessPiece(rook);
+            }
+        } else if (piece == null || (piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece))) {
             var deltaX = Math.abs(initial.x - coord.x);
             var deltaY = Math.abs(initial.y - coord.y);
 
-            if (deltaX == 1 && deltaY == 0){
+            if (deltaX == 1 && deltaY == 0) {
                 validation = true;
-            }else if (deltaX == 0 && deltaY == 1) validation = true;
-            else if (deltaX == 1 && deltaY == 1) validation = true;
+            } else if (deltaX == 0 && deltaY == 1) {
+                validation = true;
+            } else if (deltaX == 1 && deltaY == 1) {
+                validation = true;
+            }
         }
         return validation;
     }
 
 
+
     public boolean isAllowed(ChessPiece piece,Point coord, Point initial) {
         System.out.println(piece.getCoordinates());
-        System.out.println(board.pointToGrid(board.getBoardOffset()));
 
         return switch (piece.getRank()) {
             case Pawn -> isValidPawnMove(coord, initial);
