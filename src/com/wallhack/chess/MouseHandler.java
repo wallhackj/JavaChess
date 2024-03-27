@@ -43,25 +43,40 @@ public class MouseHandler extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (dragComponent != null) {
-            Board board = getBoard();
             Point p = board.pointToGrid(e.getPoint());
             ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
             ChessPiece pieceAt = board.getPieceAt(p);
 
-            if (p != null && pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
-                board.deleteChessPiece(pieceAt);
-                piece.getCoordinates().setLocation(p);
-                board.setPieceGrid(dragComponent, p);
+            if (p != null) {
+                if(piece.getRank() == ChessPiece.Rank.King && pieceMoves.isValidCasling(p, dragOffsetToPoint)){
+                    piece.getCoordinates().setLocation(p);
+                    board.setPieceGrid(dragComponent, p);
+                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 1, pieceMoves.getRook().getCoordinates().y + 1);
 
-            } else {
-                board.setPieceGrid(dragComponent, dragOffsetToPoint);
-                if (piece != null) {
+                    Component rookMoved = getBoard().getComponentAt(getBoard().gridToPoint(rookCoord));
+
+                    if (pieceMoves.getRook().getCoordinates().x == 7){
+                        Point p1 = new Point(piece.getCoordinates().x - 1, piece.getCoordinates().y);
+                        pieceMoves.getRook().getCoordinates().setLocation(p1);
+                        board.setPieceGrid(rookMoved,p1);
+                    }else if (pieceMoves.getRook().getCoordinates().x == 0){
+                        Point p1 = new Point(piece.getCoordinates().x + 1, piece.getCoordinates().y);
+                        pieceMoves.getRook().getCoordinates().setLocation(p1);
+                        board.setPieceGrid(rookMoved,p1);
+                    }
+                }else if (pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
+                    board.deleteChessPiece(pieceAt);
+                    piece.getCoordinates().setLocation(p);
+                    board.setPieceGrid(dragComponent, p);
+
+                } else {
+                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
                     piece.getCoordinates().setLocation(dragOffsetToPoint);
                 }
-            }
 
-            dragComponent = null;
-            board.setHightlightCell(null);
+                dragComponent = null;
+                board.setHightlightCell(null);
+            }
         }
     }
 

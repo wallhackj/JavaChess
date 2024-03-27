@@ -10,7 +10,12 @@ public class PieceMoves {
     private ChessPiece rook;
 
     public PieceMoves(Board board) {
+
         this.board = board;
+    }
+
+    public ChessPiece getRook() {
+        return rook;
     }
 
     public boolean isPathClear(Point coord, Point initial) {
@@ -51,8 +56,8 @@ public class PieceMoves {
 
     private boolean pieceIsMoved(ChessPiece piece){
         var isLegal = false;
-            for (ChessPiece pawns : movedPieces){
-                if (pawns.equals(piece)) {
+            for (ChessPiece piece1 : movedPieces){
+                if (piece1.equals(piece)) {
                     isLegal = true;
                     break;
                 }
@@ -156,7 +161,7 @@ public class PieceMoves {
         return isValidBishopMove(coord , initial) || isValidRookMove(coord , initial);
     }
 
-    private boolean isValidCasling(Point coord, Point initial) {
+    public boolean isValidCasling(Point coord, Point initial) {
         ChessPiece initialPiece = board.getPieceAt(initial);
         Point leftRook = new Point(0, initial.y);
         Point rightRook = new Point(7, initial.y);
@@ -187,23 +192,12 @@ public class PieceMoves {
         ChessPiece initialPiece = board.getPieceAt(initial);
         var validation = false;
 
-        if (isValidCasling(coord, initial)) {
-            validation = true;
-            if (coord.x == initial.x + 2) {
-                board.deleteChessPiece(rook);
-            }
-            else if (coord.x == initial.x - 2) {
-                board.deleteChessPiece(rook);
-            }
-        } else if (piece == null || (piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece))) {
+        if (piece == null || (piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece))) {
             var deltaX = Math.abs(initial.x - coord.x);
             var deltaY = Math.abs(initial.y - coord.y);
 
-            if (deltaX == 1 && deltaY == 0) {
-                validation = true;
-            } else if (deltaX == 0 && deltaY == 1) {
-                validation = true;
-            } else if (deltaX == 1 && deltaY == 1) {
+            if ((deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1) || (deltaX == 1 && deltaY == 1)) {
+                movedPieces.add(initialPiece);
                 validation = true;
             }
         }
