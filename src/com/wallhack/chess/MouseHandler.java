@@ -64,6 +64,7 @@ public class MouseHandler extends MouseAdapter {
                         pieceMoves.getRook().getCoordinates().setLocation(p1);
                         board.setPieceGrid(rookMoved,p1);
                     }
+                    //eeeeeee
                 }else if (pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
                     board.deleteChessPiece(pieceAt);
                     piece.getCoordinates().setLocation(p);
