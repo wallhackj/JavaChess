@@ -167,19 +167,19 @@ public class PieceMoves {
         Point rightRook = new Point(7, initial.y);
 
         var valid = false;
-        var deltaX = Math.abs(initial.x - coord.x);
-        var deltaY = Math.abs(initial.y - coord.y);
+        var deltaX = coord.x - initial.x;
+        var deltaY = coord.y - initial.y;
 
-        if (deltaY == 0 && deltaX == 2) {
+        if (deltaY == 0 && Math.abs(deltaX) == 2) {
             if (isPathClear(coord, initial) && !pieceIsMoved(initialPiece)) {
                 ChessPiece leftRookPiece = board.getPieceAt(leftRook);
                 ChessPiece rightRookPiece = board.getPieceAt(rightRook);
-                if ((!pieceIsMoved(leftRookPiece))) {
-                    valid = true;
-                    rook = rightRookPiece;
-                }else if (!pieceIsMoved(rightRookPiece)){
+                if (deltaX == -2 && !pieceIsMoved(leftRookPiece)) {
                     valid = true;
                     rook = leftRookPiece;
+                }else if (deltaX == 2 && !pieceIsMoved(rightRookPiece)){
+                    valid = true;
+                    rook = rightRookPiece;
                 }
             }
         }
