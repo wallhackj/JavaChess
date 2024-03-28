@@ -28,7 +28,7 @@ public class MouseHandler extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
 
-        if (chessCheck.isCheckmate().equals(ChessCheck.GameState.ONGOING)) {
+        if (chessCheck.gameState().equals(ChessCheck.GameState.ONGOING)) {
             ChessPiece piece = getBoard().getPieceAt(getBoard().pointToGrid(e.getPoint()));
 
             if ((countMove % 2 == 0 && piece.getPlayer() == ChessPiece.Player.White)
@@ -65,15 +65,18 @@ public class MouseHandler extends MouseAdapter {
                         Point p1 = new Point(piece.getCoordinates().x - 1, piece.getCoordinates().y);
                         pieceMoves.getRook().getCoordinates().setLocation(p1);
                         board.setPieceGrid(rookMoved,p1);
+                        countMove++;
                     }else if (pieceMoves.getRook().getCoordinates().x == 0){
                         Point p1 = new Point(piece.getCoordinates().x + 1, piece.getCoordinates().y);
                         pieceMoves.getRook().getCoordinates().setLocation(p1);
                         board.setPieceGrid(rookMoved,p1);
+                        countMove++;
                     }
                 }else if (pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
                     board.deleteChessPiece(pieceAt);
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);
+                    countMove++;
 
                 } else {
                     board.setPieceGrid(dragComponent, dragOffsetToPoint);
@@ -82,7 +85,6 @@ public class MouseHandler extends MouseAdapter {
 
                 dragComponent = null;
                 board.setHightlightCell(null);
-                countMove++;
             }
         }
     }

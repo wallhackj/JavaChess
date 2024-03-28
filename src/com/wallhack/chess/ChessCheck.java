@@ -18,13 +18,14 @@ public class ChessCheck {
     }
     private ChessPiece getKing(){
         ChessPiece piece = null;
-        for (ChessPiece piece1 : board.pieceBox.values()){
+        for (ChessPiece piece1 : board.pieceBox){
             if (piece1.getRank() == ChessPiece.Rank.King){
                 piece = piece1;
             }
         }
         return piece;
     }
+
     private boolean isHorseAttacking(Point kingPosition) {
         int[][] knightMoves = {
                 {1, 2}, {-1, 2}, {2, 1}, {2, -1},
@@ -51,7 +52,7 @@ public class ChessCheck {
         return false;
     }
 
-    public GameState isCheckmate() {
+    public GameState gameState() {
         Point kingPosition = getKing().getCoordinates();
             if ((getKing().getPlayer() == ChessPiece.Player.Black && isHorseAttacking(kingPosition))
                     || isDiagonalAttacked(kingPosition)
