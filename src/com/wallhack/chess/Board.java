@@ -20,6 +20,7 @@ public class Board extends JPanel {
     private final BoardRender boardRender;
     private Point highlightCell;
 
+
     public Board() {
         setLayout(new BoardLayoutManager());
 

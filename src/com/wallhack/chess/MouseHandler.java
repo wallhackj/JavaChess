@@ -5,7 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MouseHandler extends MouseAdapter {
-
+    private int countMove = 0;
     private Component dragComponent;
     private final Board board;
     private final PieceMoves pieceMoves;
@@ -29,13 +29,18 @@ public class MouseHandler extends MouseAdapter {
         Component comp = getBoard().getComponentAt(e.getPoint());
 
         if (chessCheck.isCheckmate().equals(ChessCheck.GameState.ONGOING)) {
-            if (comp != null) {
-                dragComponent = comp;
-                dragOffset = new Point();
-                dragOffset.x = e.getPoint().x - comp.getX();
-                dragOffset.y = e.getPoint().y - comp.getY();
+            ChessPiece piece = getBoard().getPieceAt(getBoard().pointToGrid(e.getPoint()));
 
-                dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
+            if ((countMove % 2 == 0 && piece.getPlayer() == ChessPiece.Player.White)
+                    || (countMove % 2 == 1 && piece.getPlayer() == ChessPiece.Player.Black)) {
+                if (comp != null) {
+                    dragComponent = comp;
+                    dragOffset = new Point();
+                    dragOffset.x = e.getPoint().x - comp.getX();
+                    dragOffset.y = e.getPoint().y - comp.getY();
+
+                    dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
+                }
             }
         } else chessCheck.endMenu();
     }
@@ -51,7 +56,8 @@ public class MouseHandler extends MouseAdapter {
                 if(piece.getRank() == ChessPiece.Rank.King && pieceMoves.isValidCasling(p, dragOffsetToPoint)){
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);
-                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 1, pieceMoves.getRook().getCoordinates().y + 1);
+                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 1,
+                            pieceMoves.getRook().getCoordinates().y);
 
                     Component rookMoved = getBoard().getComponentAt(getBoard().gridToPoint(rookCoord));
 
@@ -64,7 +70,6 @@ public class MouseHandler extends MouseAdapter {
                         pieceMoves.getRook().getCoordinates().setLocation(p1);
                         board.setPieceGrid(rookMoved,p1);
                     }
-                    //eeeeeee
                 }else if (pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
                     board.deleteChessPiece(pieceAt);
                     piece.getCoordinates().setLocation(p);
@@ -77,6 +82,7 @@ public class MouseHandler extends MouseAdapter {
 
                 dragComponent = null;
                 board.setHightlightCell(null);
+                countMove++;
             }
         }
     }
