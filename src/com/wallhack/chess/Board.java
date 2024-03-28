@@ -4,55 +4,42 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.JLabel;
 
-
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    private final HashMap<String, ChessPiece> pieceBox = new HashMap<>(32);
-
-    public HashMap<String, JLabel> pieceLabels = new HashMap<>(32);
+    public ArrayList<ChessPiece> pieceBox = new ArrayList<>();
+    public ArrayList<JLabel> pieceLabels = new ArrayList<>();
     private final int cellSize = 80;
     private final int initialX = 63;
     private final int initialY = 60;
-    private Point highlightCell;
     private final BoardRender boardRender;
+    private Point highlightCell;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Chess Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new BorderLayout());
-        frame.add(new Board());
-        frame.setSize(800,800);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-    }
 
     public Board() {
         setLayout(new BoardLayoutManager());
 
         boardRender = new BoardRender(initialX, initialY, cellSize);
 
-        pieceByDefault();
+        pieceByDefault("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
-        for (String piece : pieceBox.keySet()) {
-            createAndPositionLabel(piece);
+        for (int i = 0; i < pieceBox.size(); i++) {
+            createAndPositionLabel(i);
         }
 
-        for (String piece : pieceLabels.keySet()) {
-            JLabel label = pieceLabels.get(piece);
-            ChessPiece chessPiece = pieceBox.get(piece);
+        for (int i = 0; i < pieceLabels.size(); i++) {
+            JLabel label = pieceLabels.get(i);
+            ChessPiece chessPiece = pieceBox.get(i);
             if (label != null && chessPiece != null) {
-                Point pieceCoordinates = new Point(chessPiece.getCoordinates().y, chessPiece.getCoordinates().x);
-                add(label , pieceCoordinates);
+                Point pieceCoordinates = chessPiece.getCoordinates();
+                add(label, pieceCoordinates);
             }
         }
 
-
-        MouseHandler mouseHandler = new MouseHandler(this);
+        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this), new ChessCheck(this));
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
@@ -74,43 +61,42 @@ public class Board extends JPanel {
         }
     }
 
-    private void createAndPositionLabel(String piece) {
+    private void createAndPositionLabel(int index) {
         JLabel label = new JLabel();
 
         try {
-            label.setIcon(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getResource(pieceBox.get(piece).getIndex())))));
+            String imagePath = "com/wallhack/chess/resources/" + pieceBox.get(index).getIndex();
+            label.setIcon(new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource(imagePath)))));
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Eroare la citirea imaginii!");
         }
 
         Point offset = getBoardOffset();
-        Point pieceCoordinates = gridToPoint(pieceBox.get(piece).getCoordinates());
+        Point pieceCoordinates = gridToPoint(pieceBox.get(index).getCoordinates());
         label.setBounds(pieceCoordinates.x + offset.x, pieceCoordinates.y + offset.y, cellSize, cellSize);
 
-        pieceLabels.put(piece, label);
+        pieceLabels.add(label);
     }
 
-    private void pieceByDefault () {
-        String[][] defaultPositions = {
-                {"LR1", "LN1", "LB1", "LQ", "LK", "LB2", "LN2", "LR2"},
-                {"LP1", "LP2", "LP3", "LP4", "LP5", "LP6", "LP7", "LP8"},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {" ", " ", " ", " ", " ", " ", " ", " "},
-                {"Bp1", "Bp2", "Bp3", "Bp4", "Bp5", "Bp6", "Bp7", "Bp8"},
-                {"Br1", "Bn1", "Bb1", "Bq", "Bk", "Bb2", "Bn2", "Br2"}
-        };
-        for (int i = 0; i < defaultPositions.length; i++) {
-            for (int j = 0; j < defaultPositions.length; j++) {
-                String pieceType = defaultPositions[i][j];
-                if (!pieceType.equals(" ")) {
-                    pieceBox.put(pieceType, pieceFactory.create(pieceType.charAt(1), new Point(i, j)));
-                }
+    private void pieceByDefault(String fen) {
+        int row = 0;
+        int col = 0;
+
+        for (char c : fen.toCharArray()) {
+            if (c == '/') {
+                row++;
+                col = 0;
+            } else if (Character.isDigit(c)) {
+                col += Character.getNumericValue(c);
+            } else {
+                pieceBox.add(pieceFactory.create(c, new Point(col,row)));
+                col++;
             }
         }
     }
+
 
     public Point pointToGrid(Point p) {
         Point point = null;
@@ -138,6 +124,27 @@ public class Board extends JPanel {
         revalidate();
         repaint();
     }
+
+    public void deleteChessPiece(ChessPiece piece) {
+        if (piece != null) {
+          //  Point pieceCoordinates = piece.getCoordinates();
+            for (int i = 0; i < pieceBox.size(); i++) {
+                ChessPiece pi = pieceBox.get(i);
+                if (pi == piece) {
+                    pieceBox.remove(i);
+                    JLabel label = pieceLabels.get(i);
+                    pieceLabels.remove(i);
+                    remove(label);
+                    break;
+                }
+            }
+        }
+
+        revalidate();
+        repaint();
+    }
+
+
     protected Point getBoardOffset() {
         int width = getWidth();
         int height = getHeight();
@@ -147,7 +154,16 @@ public class Board extends JPanel {
 
         return p;
     }
+    public ChessPiece getPieceAt(Point coordinates){
+        ChessPiece myPiece = null;
 
+        for (ChessPiece piece : pieceBox){
+            if (piece.getCoordinates().x == coordinates.x && coordinates.y == piece.getCoordinates().y){
+                myPiece = piece;
+            }
+        }
+        return myPiece;
+    }
     public void setHightlightCell(Point p) {
         if (highlightCell != p) {
             highlightCell = p;
