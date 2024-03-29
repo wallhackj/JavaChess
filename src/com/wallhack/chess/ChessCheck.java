@@ -1,11 +1,12 @@
 package com.wallhack.chess;
 
-import java.awt.*;
-
 public class ChessCheck {
+
     public enum GameState{
         ONGOING,
         STALEMATE,
+        CHECK_TO_WHITE_KING,
+        CHECK_TO_BLACK_KING,
         CHECKMATE_TO_WHITE_KING,
         CHECKMATE_TO_BLACK_KING
     }
@@ -16,55 +17,47 @@ public class ChessCheck {
     public ChessCheck(Board board) {
         this.board = board;
     }
-    private ChessPiece getKing(){
-        ChessPiece piece = null;
-        for (ChessPiece piece1 : board.pieceBox){
-            if (piece1.getRank() == ChessPiece.Rank.King){
-                piece = piece1;
+    private ChessPiece[] getKing(){
+        ChessPiece[] kings = new ChessPiece[2];
+        for (ChessPiece piece : board.getPieceBox()){
+            if (piece.getRank() == ChessPiece.Rank.King){
+                if (piece.getPlayer() == ChessPiece.Player.White){
+                   kings[0] = piece;
+                }else kings[1] = piece;
             }
         }
-        return piece;
+      return kings;
     }
 
-    private boolean isHorseAttacking(Point kingPosition) {
-        int[][] knightMoves = {
-                {1, 2}, {-1, 2}, {2, 1}, {2, -1},
-                {-2, 1}, {-2, -1}, {1, -2}, {-1, -2}
-        };
+    private GameState isCheck(){
+        GameState check = null;
 
-        for (int[] move : knightMoves) {
-            int x = kingPosition.x + move[0];
-            int y = kingPosition.y + move[1];
-
-            if (board.getPieceAt(new Point(x,y)).getRank() == ChessPiece.Rank.Knight) {
-                return true;
+        for (ChessPiece piece : board.getPieceBox()){
+            for (int i = 0; i< getKing().length; i++){
+                if (pieceMoves.isAllowed(getKing()[i].getCoordinates(), piece.getCoordinates())) {
+                    if (i == 0){
+                        check = GameState.CHECK_TO_WHITE_KING;
+                    }else check = GameState.CHECK_TO_BLACK_KING;
+                }
             }
         }
-        return false;
+        return check;
     }
-    private boolean isDiagonalAttacked(Point kingPozition){
-        return false;
-    }
-    private boolean isPathAttacked(Point kingPozition){
-        return false;
-    }
-    private boolean isStalemate(Point kingPozition){
-        return false;
+    private GameState isCheckMate(){
+        if (isCheck() != null ){
+            if (isCheck() == GameState.CHECK_TO_BLACK_KING){
+                return GameState.CHECKMATE_TO_BLACK_KING;
+            }else return GameState.CHECKMATE_TO_WHITE_KING;
+        }
+        return null;
     }
 
     public GameState gameState() {
-        Point kingPosition = getKing().getCoordinates();
-            if ((getKing().getPlayer() == ChessPiece.Player.Black && isHorseAttacking(kingPosition))
-                    || isDiagonalAttacked(kingPosition)
-                    || isPathAttacked(kingPosition)) {
-                if (isStalemate(kingPosition)) {
-                    return GameState.STALEMATE;
-                } else {
-                    return getKing().getPlayer() == ChessPiece.Player.Black ? GameState.CHECKMATE_TO_BLACK_KING : GameState.CHECKMATE_TO_WHITE_KING;
-                }
-            }
-
-        return GameState.ONGOING;
+        if (isCheckMate() != null){
+            return isCheckMate();
+        } else if (isCheck() != null) {
+            return isCheck();
+        } else return GameState.ONGOING;
     }
     public void endMenu(){
         System.out.println("End");

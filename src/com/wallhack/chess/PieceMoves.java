@@ -18,7 +18,7 @@ public class PieceMoves {
         return rook;
     }
 
-    public boolean isPathClear(Point coord, Point initial) {
+    private boolean isPathClear(Point coord, Point initial) {
         int deltaX = coord.x - initial.x;
         int deltaY = coord.y - initial.y;
 
@@ -32,7 +32,7 @@ public class PieceMoves {
         }
         return true;
     }
-    public boolean isDiagonalClear(Point coord, Point initial) {
+    private boolean isDiagonalClear(Point coord, Point initial) {
         int deltaX = coord.x - initial.x;
         int deltaY = coord.y - initial.y;
 
@@ -154,7 +154,6 @@ public class PieceMoves {
             }
         }
         return validation;
-      //  eeeee
     }
 
 
@@ -207,7 +206,8 @@ public class PieceMoves {
 
 
 
-    public boolean isAllowed(ChessPiece piece,Point coord, Point initial) {
+    public boolean isAllowed(Point coord, Point initial) {
+        ChessPiece piece = board.getPieceAt(initial);
         System.out.println(piece.getCoordinates());
 
         return switch (piece.getRank()) {

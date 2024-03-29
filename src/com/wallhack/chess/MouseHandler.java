@@ -56,7 +56,7 @@ public class MouseHandler extends MouseAdapter {
                 if(piece.getRank() == ChessPiece.Rank.King && pieceMoves.isValidCasling(p, dragOffsetToPoint)){
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);
-                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 1,
+                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 2,
                             pieceMoves.getRook().getCoordinates().y);
 
                     Component rookMoved = getBoard().getComponentAt(getBoard().gridToPoint(rookCoord));
@@ -72,7 +72,7 @@ public class MouseHandler extends MouseAdapter {
                         board.setPieceGrid(rookMoved,p1);
                         countMove++;
                     }
-                }else if (pieceMoves.isAllowed(piece, p, dragOffsetToPoint)) {
+                }else if (pieceMoves.isAllowed(p, dragOffsetToPoint)) {
                     board.deleteChessPiece(pieceAt);
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);

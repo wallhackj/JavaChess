@@ -10,8 +10,8 @@ import javax.swing.JLabel;
 
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    public ArrayList<ChessPiece> pieceBox = new ArrayList<>();
-    public ArrayList<JLabel> pieceLabels = new ArrayList<>();
+    private ArrayList<ChessPiece> pieceBox = new ArrayList<>();
+    private ArrayList<JLabel> pieceLabels = new ArrayList<>();
     private final int cellSize = 80;
     private final int initialX = 63;
     private final int initialY = 60;
@@ -43,6 +43,14 @@ public class Board extends JPanel {
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
+    }
+
+    public ArrayList<ChessPiece> getPieceBox() {
+        return pieceBox;
+    }
+
+    public ArrayList<JLabel> getPieceLabels() {
+        return pieceLabels;
     }
 
     @Override
