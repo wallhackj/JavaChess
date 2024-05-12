@@ -10,8 +10,8 @@ import javax.swing.JLabel;
 
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    private ArrayList<ChessPiece> pieceBox = new ArrayList<>();
-    private ArrayList<JLabel> pieceLabels = new ArrayList<>();
+    private final ArrayList<ChessPiece> pieceBox = new ArrayList<>();
+    private final ArrayList<JLabel> pieceLabels = new ArrayList<>();
     private final int cellSize = 80;
     private final int initialX = 63;
     private final int initialY = 60;
@@ -39,7 +39,7 @@ public class Board extends JPanel {
             }
         }
 
-        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this), new ChessCheck(this));
+        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this), new ChessCheck(this, new PieceMoves(this)));
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
 
@@ -152,7 +152,6 @@ public class Board extends JPanel {
         repaint();
     }
 
-
     protected Point getBoardOffset() {
         int width = getWidth();
         int height = getHeight();
@@ -178,5 +177,6 @@ public class Board extends JPanel {
             repaint();
         }
     }
+
 
 }

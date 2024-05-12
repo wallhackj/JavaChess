@@ -10,7 +10,6 @@ public class PieceMoves {
     private ChessPiece rook;
 
     public PieceMoves(Board board) {
-
         this.board = board;
     }
 
@@ -35,7 +34,6 @@ public class PieceMoves {
     private boolean isDiagonalClear(Point coord, Point initial) {
         int deltaX = coord.x - initial.x;
         int deltaY = coord.y - initial.y;
-
 
         int dirX = Integer.compare(deltaX, 0);
         int dirY = Integer.compare(deltaY, 0);
@@ -73,7 +71,6 @@ public class PieceMoves {
         int deltaX = initial.x - coord.x;
         int deltaY = initial.y - coord.y;
 
-
         if (piece == null) {
             if (initialPiece.getPlayer() == ChessPiece.Player.White ) {
                 if ((deltaY == 2 || deltaY == 1) && coord.x == initial.x && !pieceIsMoved(initialPiece)) {
@@ -103,7 +100,6 @@ public class PieceMoves {
 
         return validation;
     }
-
 
     private boolean isValidKnightMove(Point coord, Point initial) {
         ChessPiece piece = board.getPieceAt(coord);
@@ -156,7 +152,6 @@ public class PieceMoves {
         return validation;
     }
 
-
     private boolean isValidQueenMove(Point coord, Point initial) {
         return isValidBishopMove(coord , initial) || isValidRookMove(coord , initial);
     }
@@ -186,7 +181,6 @@ public class PieceMoves {
         return valid;
     }
 
-
     private boolean isValidKingMove(Point coord, Point initial) {
         ChessPiece piece = board.getPieceAt(coord);
         ChessPiece initialPiece = board.getPieceAt(initial);
@@ -204,11 +198,8 @@ public class PieceMoves {
         return validation;
     }
 
-
-
     public boolean isAllowed(Point coord, Point initial) {
         ChessPiece piece = board.getPieceAt(initial);
-        System.out.println(piece.getCoordinates());
 
         return switch (piece.getRank()) {
             case Pawn -> isValidPawnMove(coord, initial);

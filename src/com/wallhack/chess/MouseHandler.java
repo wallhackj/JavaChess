@@ -24,25 +24,40 @@ public class MouseHandler extends MouseAdapter {
         return board;
     }
 
+    private void setPieceMoves(Component comp, MouseEvent e) {
+        if (comp != null) {
+            dragComponent = comp;
+            dragOffset = new Point();
+            dragOffset.x = e.getPoint().x - comp.getX();
+            dragOffset.y = e.getPoint().y - comp.getY();
+
+            dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
+        }
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
+        ChessPiece piece = getBoard().getPieceAt(getBoard().pointToGrid(comp.getLocation()));
 
-        if (chessCheck.gameState().equals(ChessCheck.GameState.ONGOING)) {
-            ChessPiece piece = getBoard().getPieceAt(getBoard().pointToGrid(e.getPoint()));
-
-            if ((countMove % 2 == 0 && piece.getPlayer() == ChessPiece.Player.White)
-                    || (countMove % 2 == 1 && piece.getPlayer() == ChessPiece.Player.Black)) {
-                if (comp != null) {
-                    dragComponent = comp;
-                    dragOffset = new Point();
-                    dragOffset.x = e.getPoint().x - comp.getX();
-                    dragOffset.y = e.getPoint().y - comp.getY();
-
-                    dragOffsetToPoint = getBoard().pointToGrid(comp.getLocation());
+        if ((countMove % 2 == 0 && piece.getPlayer() == ChessPiece.Player.White)
+                || (countMove % 2 == 1 && piece.getPlayer() == ChessPiece.Player.Black)) {
+            if (chessCheck.gameState().equals(ChessCheck.GameState.ONGOING)) {
+                setPieceMoves(comp, e);
+            } else if (chessCheck.gameState().equals(ChessCheck.GameState.CHECK_TO_BLACK_KING)
+                    || chessCheck.gameState().equals(ChessCheck.GameState.CHECK_TO_WHITE_KING)) {
+                if (piece.getRank() == ChessPiece.Rank.King) {
+                   setPieceMoves(comp, e);
                 }
-            }
-        } else chessCheck.endMenu();
+                System.out.println("e");
+            } else System.out.println("p");
+        }
+    }
+
+    private void setCountMove(Point p, Component rookMoved){
+        pieceMoves.getRook().getCoordinates().setLocation(p);
+        board.setPieceGrid(rookMoved,p);
+        countMove++;
     }
 
     @Override
@@ -63,14 +78,10 @@ public class MouseHandler extends MouseAdapter {
 
                     if (pieceMoves.getRook().getCoordinates().x == 7){
                         Point p1 = new Point(piece.getCoordinates().x - 1, piece.getCoordinates().y);
-                        pieceMoves.getRook().getCoordinates().setLocation(p1);
-                        board.setPieceGrid(rookMoved,p1);
-                        countMove++;
+                        setCountMove(p1, rookMoved);
                     }else if (pieceMoves.getRook().getCoordinates().x == 0){
                         Point p1 = new Point(piece.getCoordinates().x + 1, piece.getCoordinates().y);
-                        pieceMoves.getRook().getCoordinates().setLocation(p1);
-                        board.setPieceGrid(rookMoved,p1);
-                        countMove++;
+                        setCountMove(p1, rookMoved);
                     }
                 }else if (pieceMoves.isAllowed(p, dragOffsetToPoint)) {
                     board.deleteChessPiece(pieceAt);
@@ -88,7 +99,6 @@ public class MouseHandler extends MouseAdapter {
             }
         }
     }
-
 
     @Override
     public void mouseDragged(MouseEvent e) {
