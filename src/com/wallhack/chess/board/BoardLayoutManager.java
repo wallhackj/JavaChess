@@ -1,4 +1,4 @@
-package com.wallhack.chess;
+package com.wallhack.chess.board;
 
 import java.awt.*;
 import java.util.HashMap;

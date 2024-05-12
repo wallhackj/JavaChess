@@ -1,5 +1,7 @@
 package com.wallhack.chess;
 
+import com.wallhack.chess.board.Board;
+
 import javax.swing.*;
 import java.awt.*;
 
