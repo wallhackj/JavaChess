@@ -1,4 +1,8 @@
-package com.wallhack.chess;
+package com.wallhack.chess.board;
+
+import com.wallhack.chess.*;
+import com.wallhack.chess.pieces.ChessPiece;
+import com.wallhack.chess.pieces.PieceFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,7 +14,7 @@ import javax.swing.JLabel;
 
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    private final ArrayList<ChessPiece> pieceBox = new ArrayList<>();
+    private final static ArrayList<ChessPiece> pieceBox = new ArrayList<>();
     private final ArrayList<JLabel> pieceLabels = new ArrayList<>();
     private final int cellSize = 80;
     private final int initialX = 63;
@@ -21,10 +25,9 @@ public class Board extends JPanel {
 
     public Board() {
         setLayout(new BoardLayoutManager());
-
         boardRender = new BoardRender(initialX, initialY, cellSize);
 
-        pieceByDefault("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        pieceByDefault("rnbqkbnr/ppp3pp/3p1p2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR");
 
         for (int i = 0; i < pieceBox.size(); i++) {
             createAndPositionLabel(i);
@@ -39,9 +42,9 @@ public class Board extends JPanel {
             }
         }
 
-        MouseHandler mouseHandler = new MouseHandler(this, new PieceMoves(this), new ChessCheck(this, new PieceMoves(this)));
-        addMouseListener(mouseHandler);
-        addMouseMotionListener(mouseHandler);
+//        MouseHandler mouseHandler = new MouseHandler(this, new ChessCheck(this));
+//        addMouseListener(mouseHandler);
+//        addMouseMotionListener(mouseHandler);
 
     }
 
@@ -105,7 +108,6 @@ public class Board extends JPanel {
         }
     }
 
-
     public Point pointToGrid(Point p) {
         Point point = null;
         if (p != null) {
@@ -161,7 +163,10 @@ public class Board extends JPanel {
 
         return p;
     }
-    public ChessPiece getPieceAt(Point coordinates){
+    public static boolean isValidPosition(Point p) {
+        return p.x >= 0 && p.x < 8 && p.y >= 0 && p.y < 8;
+    }
+    public static ChessPiece getPieceAt(Point coordinates){
         ChessPiece myPiece = null;
 
         for (ChessPiece piece : pieceBox){
@@ -177,6 +182,4 @@ public class Board extends JPanel {
             repaint();
         }
     }
-
-
 }
