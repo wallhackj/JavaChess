@@ -1,11 +1,14 @@
 package com.wallhack.chess;
 
 import com.wallhack.chess.board.Board;
-import com.wallhack.chess.pieces.ChessPiece;
+import com.wallhack.chess.pieces.*;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import static com.wallhack.chess.board.Board.getPieceAt;
+import static com.wallhack.chess.board.Board.getPieceBox;
 
 public class MouseHandler extends MouseAdapter {
     private int countMove = 0;
@@ -27,12 +30,19 @@ public class MouseHandler extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
-        ChessPiece piece = getBoard().getPieceAt(getBoard().pointToGrid(comp.getLocation()));
+        ChessPiece piece = getPieceAt(getBoard().pointToGrid(comp.getLocation()));
 
-        if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
-                || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
-                setPieceMoves(comp, e);
-        }
+        ChessPiece k = getPieceBox().stream().filter(b -> b instanceof King).findFirst().get();
+        System.out.println(k.getCoordinates() + "E");
+        System.out.println(k.squaresUnderAttack().toString());
+        System.out.println(k.isValidMove(new Point(6,0)));
+
+//        if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
+//                || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
+//                setPieceMoves(comp, e);
+//
+//
+//        }
     }
 
 
@@ -40,8 +50,8 @@ public class MouseHandler extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (dragComponent != null) {
             Point p = board.pointToGrid(e.getPoint());
-            ChessPiece piece = board.getPieceAt(dragOffsetToPoint);
-            ChessPiece pieceAt = board.getPieceAt(p);
+            ChessPiece piece = getPieceAt(dragOffsetToPoint);
+            ChessPiece pieceAt = getPieceAt(p);
 
             if (p != null) {
 //                if(piece.getRank() == Rank.King && pieceMoves.isValidCasling(p, dragOffsetToPoint)){

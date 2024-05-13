@@ -4,8 +4,9 @@ import com.wallhack.chess.Player;
 import com.wallhack.chess.Rank;
 
 import java.awt.*;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Queen extends ChessPiece{
     private final Rook rook;
@@ -19,17 +20,14 @@ public class Queen extends ChessPiece{
 
     @Override
     public boolean isValidMove(Point target) {
-        return rook.isValidMove(target) && bishop.isValidMove(target);
+        return rook.isValidMove(target) || bishop.isValidMove(target);
     }
 
     @Override
     public Set<Point> squaresUnderAttack() {
-        Set<Point> attackedSquares = new HashSet<>();
-        attackedSquares.addAll(rook.squaresUnderAttack());
-        attackedSquares.addAll(bishop.squaresUnderAttack());
-        return attackedSquares;
+        return Stream
+                .concat(rook.squaresUnderAttack().stream()
+                        ,bishop.squaresUnderAttack().stream())
+                .collect(Collectors.toSet());
     }
-
-
-
 }

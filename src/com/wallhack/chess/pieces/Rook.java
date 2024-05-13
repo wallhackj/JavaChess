@@ -7,7 +7,8 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
+import static com.wallhack.chess.board.Board.*;
+import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
 public class Rook extends ChessPiece{
 
@@ -16,38 +17,34 @@ public class Rook extends ChessPiece{
     }
 
     @Override
-    public boolean isValidMove(Point target) {
-        ChessPiece piece = getPieceAt(target);
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
-        boolean validation = false;
-
-        if (piece == null || piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece)){
-            if (target.x == getCoordinates().x || target.y == getCoordinates().y) {
-                if (isPathClear(getCoordinates(), target)) {
-                    movedPieces.add(initialPiece);
-                    validation = true;
-                }
-            }
-        }
-        return validation;
-    }
-
-    @Override
     public Set<Point> squaresUnderAttack() {
         Set<Point> attackedSquares = new HashSet<>();
 
-        for (int x = 0; x < 8; x++) {
-            if (x != getCoordinates().x) {
-                attackedSquares.add(new Point(x, getCoordinates().y));
-            }
-        }
-        for (int y = 0; y < 8; y++) {
-            if (y != getCoordinates().y) {
-                attackedSquares.add(new Point(getCoordinates().x, y));
+        int[][] verticalDirections = {
+                {1, 0}, {0, -1}, {-1, 0}, {0, 1}
+        };
+
+        for (int[] dir : verticalDirections) {
+            int dx = dir[0];
+            int dy = dir[1];
+
+            for (int i = 1; i <= 7; i++) {
+                int newX = getCoordinates().x + i * dx;
+                int newY = getCoordinates().y + i * dy;
+
+                Point point = new Point(newX, newY);
+                if (isValidPosition(point)) {
+                    attackedSquares.add(point);
+
+                    ChessPiece pieceAt = getPieceAt(point);
+                    if (pieceAt != null && pieceAt.getPlayer() == getPlayer()) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
             }
         }
         return attackedSquares;
     }
-
-
 }

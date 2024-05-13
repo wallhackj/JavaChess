@@ -7,29 +7,51 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
-import static com.wallhack.chess.board.Board.isValidPosition;
+import static com.wallhack.chess.board.Board.*;
+import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
-public class King extends ChessPiece{
+public class King extends ChessPiece {
     private ChessPiece rook;
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
     }
 
+    public ChessPiece getRook() {
+        return rook;
+    }
+
+    private boolean isPathClear(Point coord) {
+        int deltaX = coord.x - getCoordinates().x;
+        int deltaY = coord.y - getCoordinates().y;
+
+        for (int i = 1; i < Math.max(Math.abs(deltaX), Math.abs(deltaY)); i++) {
+            int x = getCoordinates().x + i * Integer.compare(deltaX, 0);
+            int y = getCoordinates().y + i * Integer.compare(deltaY, 0);
+
+            if (getPieceAt(new Point(x, y)) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public boolean isValidMove(Point target) {
-        ChessPiece piece = getPieceAt(target);
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
-        var validation = false;
+        var validation = true;
+        ChessPiece pieceAt = getPieceAt(target);
 
-        if (piece == null || (piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece))) {
-            var deltaX = Math.abs(getCoordinates().x - target.x);
-            var deltaY = Math.abs(getCoordinates().y - target.y);
-
-            if ((deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1) || (deltaX == 1 && deltaY == 1)) {
-                movedPieces.add(initialPiece);
-                validation = true;
+        if (!isValidCasling(target)){
+            for (ChessPiece piece : getPieceBox()) {
+                if (piece.getPlayer() != getPlayer()) {
+                    if (!piece.squaresUnderAttack().contains(target)) {
+                        if (squaresUnderAttack().contains(target)){
+                            if (pieceAt != null){
+                                validation = getPlayer() != piece.getPlayer();
+                            }else validation = true;
+                        }else validation = false;
+                    }
+                }
             }
         }
         return validation;
@@ -62,12 +84,8 @@ public class King extends ChessPiece{
         return attackedSquares;
     }
 
-    public void setRook(ChessPiece rook) {
-        this.rook = rook;
-    }
-
     private boolean isValidCasling(Point coord) {
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
+
         Point leftRook = new Point(0, getCoordinates().y);
         Point rightRook = new Point(7, getCoordinates().y);
 
@@ -76,13 +94,13 @@ public class King extends ChessPiece{
         var deltaY = coord.y - getCoordinates().y;
 
         if (deltaY == 0 && Math.abs(deltaX) == 2) {
-            if (isPathClear(coord, getCoordinates()) && pieceIsMoved(initialPiece)) {
+            if (isPathClear(coord) && pieceIsMoved(getPieceAt(getCoordinates()))) {
                 ChessPiece leftRookPiece = getPieceAt(leftRook);
                 ChessPiece rightRookPiece = getPieceAt(rightRook);
                 if (deltaX == -2 && pieceIsMoved(leftRookPiece)) {
                     valid = true;
                     rook = leftRookPiece;
-                }else if (deltaX == 2 && pieceIsMoved(rightRookPiece)){
+                } else if (deltaX == 2 && pieceIsMoved(rightRookPiece)) {
                     valid = true;
                     rook = rightRookPiece;
                 }
@@ -90,4 +108,5 @@ public class King extends ChessPiece{
         }
         return valid;
     }
+
 }
