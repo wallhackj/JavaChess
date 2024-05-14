@@ -8,7 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static com.wallhack.chess.board.Board.getPieceAt;
-import static com.wallhack.chess.board.Board.getPieceBox;
 
 public class MouseHandler extends MouseAdapter {
     private int countMove = 0;
@@ -32,53 +31,29 @@ public class MouseHandler extends MouseAdapter {
         Component comp = getBoard().getComponentAt(e.getPoint());
         ChessPiece piece = getPieceAt(getBoard().pointToGrid(comp.getLocation()));
 
-        ChessPiece k = getPieceBox().stream().filter(b -> b instanceof King).findFirst().get();
-        System.out.println(k.getCoordinates() + "E");
-        System.out.println(k.squaresUnderAttack().toString());
-        System.out.println(k.isValidMove(new Point(6,0)));
-
-//        if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
-//                || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
-//                setPieceMoves(comp, e);
-//
-//
-//        }
+        if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
+                || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
+                setPieceMoves(comp, e);
+        }
     }
-
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (dragComponent != null) {
             Point p = board.pointToGrid(e.getPoint());
             ChessPiece piece = getPieceAt(dragOffsetToPoint);
-            ChessPiece pieceAt = getPieceAt(p);
 
             if (p != null) {
-//                if(piece.getRank() == Rank.King && pieceMoves.isValidCasling(p, dragOffsetToPoint)){
-//                    piece.getCoordinates().setLocation(p);
-//                    board.setPieceGrid(dragComponent, p);
-//                    Point rookCoord = new Point(pieceMoves.getRook().getCoordinates().x + 2,
-//                            pieceMoves.getRook().getCoordinates().y);
-//
-//                    Component rookMoved = getBoard().getComponentAt(getBoard().gridToPoint(rookCoord));
-//
-//                    if (pieceMoves.getRook().getCoordinates().x == 7){
-//                        Point p1 = new Point(piece.getCoordinates().x - 1, piece.getCoordinates().y);
-//                        setCountMove(p1, rookMoved);
-//                    }else if (pieceMoves.getRook().getCoordinates().x == 0){
-//                        Point p1 = new Point(piece.getCoordinates().x + 1, piece.getCoordinates().y);
-//                        setCountMove(p1, rookMoved);
-//                    }
-//                }else if (pieceMoves.isAllowed(p, dragOffsetToPoint)) {
-//                    board.deleteChessPiece(pieceAt);
-//                    piece.getCoordinates().setLocation(p);
-//                    board.setPieceGrid(dragComponent, p);
-//                    countMove++;
-//
-//                } else {
-//                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
-//                    piece.getCoordinates().setLocation(dragOffsetToPoint);
-//                }
+                 if (piece.isValidMove(p)) {
+                    board.deleteChessPiece(getPieceAt(p));
+                    piece.getCoordinates().setLocation(p);
+                    board.setPieceGrid(dragComponent, p);
+                    countMove++;
+
+                } else {
+                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
+                    piece.getCoordinates().setLocation(dragOffsetToPoint);
+                }
 
                 dragComponent = null;
                 board.setHightlightCell(null);

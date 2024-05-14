@@ -8,39 +8,45 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.wallhack.chess.board.Board.getPieceAt;
-import static com.wallhack.chess.board.BoardUtils.isValidPosition;
+import static com.wallhack.chess.board.BoardUtils.*;
 
 public class Pawn extends ChessPiece {
+    private final Set<ChessPiece> movedPieces = new HashSet<>();
 
     public Pawn(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
     }
 
     private boolean isFirstMove() {
-        return pieceIsMoved(this);
+        return pieceIsMoved(this, movedPieces);
     }
+
 
     @Override
     public boolean isValidMove(Point target) {
         ChessPiece targetPiece = getPieceAt(target);
 
-        int deltaX = getCoordinates().x - target.x;
-        int deltaY = getCoordinates().y - target.y;
+        int deltaX = Math.abs(getCoordinates().x - target.x);
+        int deltaY = Math.abs(getCoordinates().y - target.y);
+        int direction = getPlayer() == Player.White ? -1 : 1;
 
         if (targetPiece != null) {
-            return false;
-        }
+            if (squaresUnderAttack().contains(target) && isNotKing(targetPiece) && getPlayer() != targetPiece.getPlayer()) {
+                movedPieces.add(this);
+                return true;
+            }
+        } else {
+            if (!isFirstMove() && deltaY == 2 && deltaX == 0
+                    && direction == (target.y - getCoordinates().y) / deltaY) {
+                movedPieces.add(this);
+                return true;
+            }
 
-        int direction = getPlayer() == Player.White ? 1 : -1;
-
-        if (!isFirstMove() && Math.abs(deltaY) == 2) {
-            return false;
-        }
-
-        if (Math.abs(deltaX) == 1) {
-            return deltaY == direction;
-        } else if (deltaX == 0) {
-            return deltaY == direction || (isFirstMove() && deltaY == 2 * direction);
+            if (deltaX == 0 && deltaY == 1
+                    && direction == (target.y - getCoordinates().y) / deltaY) {
+                movedPieces.add(this);
+                return true;
+            }
         }
 
         return false;

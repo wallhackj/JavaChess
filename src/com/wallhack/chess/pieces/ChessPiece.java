@@ -4,7 +4,6 @@ import com.wallhack.chess.Player;
 import com.wallhack.chess.Rank;
 
 import java.awt.*;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,7 +12,6 @@ import static com.wallhack.chess.board.BoardUtils.isNotKing;
 
 
 public abstract class ChessPiece {
-    protected final Set<ChessPiece> movedPieces = new HashSet<>();
     private final Player player;
     private final Rank rank;
     private final String pictureName;
@@ -43,18 +41,6 @@ public abstract class ChessPiece {
         return coordinates;
     }
 
-
-    protected boolean pieceIsMoved(ChessPiece piece){
-        var isLegal = false;
-        for (ChessPiece piece1 : movedPieces){
-            if (piece1.equals(piece)) {
-                isLegal = true;
-                break;
-            }
-        }
-
-        return isLegal;
-    }
 
     public boolean isValidMove(Point target) {
         ChessPiece piece = getPieceAt(target);

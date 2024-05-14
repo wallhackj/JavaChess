@@ -9,16 +9,14 @@ import java.util.Set;
 
 import static com.wallhack.chess.board.Board.*;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
+import static com.wallhack.chess.board.BoardUtils.pieceIsMoved;
 
 public class King extends ChessPiece {
     private ChessPiece rook;
+    private final Set<ChessPiece> movedPieces = new HashSet<>();
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
-    }
-
-    public ChessPiece getRook() {
-        return rook;
     }
 
     private boolean isPathClear(Point coord) {
@@ -41,7 +39,7 @@ public class King extends ChessPiece {
         var validation = true;
         ChessPiece pieceAt = getPieceAt(target);
 
-        if (!isValidCasling(target)){
+        if (!isValidCastling(target)){
             for (ChessPiece piece : getPieceBox()) {
                 if (piece.getPlayer() != getPlayer()) {
                     if (!piece.squaresUnderAttack().contains(target)) {
@@ -84,7 +82,7 @@ public class King extends ChessPiece {
         return attackedSquares;
     }
 
-    private boolean isValidCasling(Point coord) {
+    private boolean isValidCastling(Point coord) {
 
         Point leftRook = new Point(0, getCoordinates().y);
         Point rightRook = new Point(7, getCoordinates().y);
@@ -94,13 +92,13 @@ public class King extends ChessPiece {
         var deltaY = coord.y - getCoordinates().y;
 
         if (deltaY == 0 && Math.abs(deltaX) == 2) {
-            if (isPathClear(coord) && pieceIsMoved(getPieceAt(getCoordinates()))) {
+            if (isPathClear(coord) && pieceIsMoved(getPieceAt(getCoordinates()), movedPieces)) {
                 ChessPiece leftRookPiece = getPieceAt(leftRook);
                 ChessPiece rightRookPiece = getPieceAt(rightRook);
-                if (deltaX == -2 && pieceIsMoved(leftRookPiece)) {
+                if (deltaX == -2 && pieceIsMoved(leftRookPiece, movedPieces)) {
                     valid = true;
                     rook = leftRookPiece;
-                } else if (deltaX == 2 && pieceIsMoved(rightRookPiece)) {
+                } else if (deltaX == 2 && pieceIsMoved(rightRookPiece, movedPieces)) {
                     valid = true;
                     rook = rightRookPiece;
                 }
