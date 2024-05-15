@@ -25,6 +25,9 @@ public abstract class ChessPiece {
         this.coordinates = coordinates;
     }
 
+
+    a
+
     public Player getPlayer() {
         return player;
     }

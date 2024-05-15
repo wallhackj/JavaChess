@@ -17,6 +17,8 @@ public class Pawn extends ChessPiece {
         super(player, rank, pictureName, coordinates);
     }
 
+    a
+
     @Override
     public boolean isValidMove(Point target) {
         ChessPiece targetPiece = getPieceAt(target);

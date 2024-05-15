@@ -59,6 +59,8 @@ public class King extends ChessPiece {
         return validation;
     }
 
+
+
     @Override
     public Set<Point> squaresUnderAttack() {
         Set<Point> attackedSquares = new HashSet<>();
