@@ -11,16 +11,11 @@ import static com.wallhack.chess.board.Board.getPieceAt;
 import static com.wallhack.chess.board.BoardUtils.*;
 
 public class Pawn extends ChessPiece {
-    private final Set<ChessPiece> movedPieces = new HashSet<>();
+    private boolean hasBeenMoved = false;
 
     public Pawn(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
     }
-
-    private boolean isFirstMove() {
-        return pieceIsMoved(this, movedPieces);
-    }
-
 
     @Override
     public boolean isValidMove(Point target) {
@@ -32,19 +27,19 @@ public class Pawn extends ChessPiece {
 
         if (targetPiece != null) {
             if (squaresUnderAttack().contains(target) && isNotKing(targetPiece) && getPlayer() != targetPiece.getPlayer()) {
-                movedPieces.add(this);
+                hasBeenMoved = true;
                 return true;
             }
         } else {
-            if (!isFirstMove() && deltaY == 2 && deltaX == 0
+            if (!hasBeenMoved && deltaY == 2 && deltaX == 0
                     && direction == (target.y - getCoordinates().y) / deltaY) {
-                movedPieces.add(this);
+                hasBeenMoved = true;
                 return true;
             }
 
             if (deltaX == 0 && deltaY == 1
                     && direction == (target.y - getCoordinates().y) / deltaY) {
-                movedPieces.add(this);
+                hasBeenMoved = true;
                 return true;
             }
         }

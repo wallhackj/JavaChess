@@ -9,9 +9,22 @@ import java.util.Set;
 import static com.wallhack.chess.board.BoardUtils.getPointSet;
 
 public class Rook extends ChessPiece{
+    private boolean hasBeenMoved = false;
 
     public Rook(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
+    }
+
+    public boolean isHasBeenMoved() {
+        return hasBeenMoved;
+    }
+
+    @Override
+    public boolean isValidMove(Point target) {
+        if (super.isValidMove(target)){
+            hasBeenMoved = true;
+        }
+        return super.isValidMove(target);
     }
 
     @Override

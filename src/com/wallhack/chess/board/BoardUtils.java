@@ -18,19 +18,6 @@ public class BoardUtils {
         return p.x >= 0 && p.x < 8 && p.y >= 0 && p.y < 8;
     }
 
-    public static boolean pieceIsMoved(ChessPiece piece, Set<ChessPiece> movedPieces){
-        var valid = false;
-
-        for (ChessPiece piece1 : movedPieces){
-            if (piece1.equals(piece)) {
-                valid = true;
-                break;
-            }
-        }
-
-        return valid;
-    }
-
     public static Set<Point> getPointSet(int[][] verticalDirections , ChessPiece piece) {
         Set<Point> attackedSquares = new HashSet<>();
 

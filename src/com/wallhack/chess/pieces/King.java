@@ -9,11 +9,9 @@ import java.util.Set;
 
 import static com.wallhack.chess.board.Board.*;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
-import static com.wallhack.chess.board.BoardUtils.pieceIsMoved;
 
 public class King extends ChessPiece {
-    private ChessPiece rook;
-    private final Set<ChessPiece> movedPieces = new HashSet<>();
+    private boolean hasBeenMoved = true;;
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
@@ -36,18 +34,24 @@ public class King extends ChessPiece {
 
     @Override
     public boolean isValidMove(Point target) {
-        var validation = true;
+        var validation = false;
         ChessPiece pieceAt = getPieceAt(target);
 
         if (!isValidCastling(target)){
             for (ChessPiece piece : getPieceBox()) {
-                if (piece.getPlayer() != getPlayer()) {
-                    if (!piece.squaresUnderAttack().contains(target)) {
-                        if (squaresUnderAttack().contains(target)){
-                            if (pieceAt != null){
-                                validation = getPlayer() != piece.getPlayer();
-                            }else validation = true;
-                        }else validation = false;
+                if (!piece.squaresUnderAttack().contains(target)
+                        && piece.getPlayer() != getPlayer()) {
+
+                    if (squaresUnderAttack().contains(target)){
+                        if (pieceAt != null){
+                            if (pieceAt.getPlayer() != getPlayer()){
+                                validation = true;
+                                hasBeenMoved = true;
+                            }
+                        }else {
+                            validation = true;
+                            hasBeenMoved = true;
+                        }
                     }
                 }
             }
@@ -92,15 +96,15 @@ public class King extends ChessPiece {
         var deltaY = coord.y - getCoordinates().y;
 
         if (deltaY == 0 && Math.abs(deltaX) == 2) {
-            if (isPathClear(coord) && pieceIsMoved(getPieceAt(getCoordinates()), movedPieces)) {
-                ChessPiece leftRookPiece = getPieceAt(leftRook);
-                ChessPiece rightRookPiece = getPieceAt(rightRook);
-                if (deltaX == -2 && pieceIsMoved(leftRookPiece, movedPieces)) {
+            if (isPathClear(coord) && !hasBeenMoved) {
+
+                Rook leftRookPiece = (Rook) getPieceAt(leftRook);
+                Rook rightRookPiece = (Rook) getPieceAt(rightRook);
+
+                if (deltaX == -2 && !leftRookPiece.isHasBeenMoved()) {
                     valid = true;
-                    rook = leftRookPiece;
-                } else if (deltaX == 2 && pieceIsMoved(rightRookPiece, movedPieces)) {
+                } else if (deltaX == 2 && !rightRookPiece.isHasBeenMoved()) {
                     valid = true;
-                    rook = rightRookPiece;
                 }
             }
         }
