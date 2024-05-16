@@ -17,8 +17,6 @@ public class Pawn extends ChessPiece {
         super(player, rank, pictureName, coordinates);
     }
 
-    a
-
     @Override
     public boolean isValidMove(Point target) {
         ChessPiece targetPiece = getPieceAt(target);
@@ -28,7 +26,8 @@ public class Pawn extends ChessPiece {
         int direction = getPlayer() == Player.White ? -1 : 1;
 
         if (targetPiece != null) {
-            if (squaresUnderAttack().contains(target) && isNotKing(targetPiece) && getPlayer() != targetPiece.getPlayer()) {
+            if (squaresUnderAttack().contains(target) && isNotKing(targetPiece)
+                    && getPlayer() != targetPiece.getPlayer()) {
                 hasBeenMoved = true;
                 return true;
             }
@@ -45,7 +44,6 @@ public class Pawn extends ChessPiece {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -56,8 +54,10 @@ public class Pawn extends ChessPiece {
         Point target2 = new Point(getCoordinates().x - 1, getCoordinates().y + direction);
 
         Set<Point> attackedSquares = new HashSet<>();
-        if (isValidPosition(target1) && isValidPosition(target2)) {
+        if (isValidPosition(target1)) {
             attackedSquares.add(target1);
+        }
+        if (isValidPosition(target2)){
             attackedSquares.add(target2);
         }
         return attackedSquares;

@@ -11,13 +11,14 @@ import static com.wallhack.chess.board.Board.*;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
 public class King extends ChessPiece {
-    private boolean hasBeenMoved = true;;
+    private boolean hasBeenMoved = false;
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
     }
 
     private boolean isPathClear(Point coord) {
+        var valid = true;
         int deltaX = coord.x - getCoordinates().x;
         int deltaY = coord.y - getCoordinates().y;
 
@@ -26,10 +27,10 @@ public class King extends ChessPiece {
             int y = getCoordinates().y + i * Integer.compare(deltaY, 0);
 
             if (getPieceAt(new Point(x, y)) != null) {
-                return false;
+                valid = false;
             }
         }
-        return true;
+        return valid;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class King extends ChessPiece {
                     }
                 }
             }
-        }
+        } else validation = true;
         return validation;
     }
 
@@ -97,18 +98,23 @@ public class King extends ChessPiece {
         var deltaX = coord.x - getCoordinates().x;
         var deltaY = coord.y - getCoordinates().y;
 
-        if (deltaY == 0 && Math.abs(deltaX) == 2) {
-            if (isPathClear(coord) && !hasBeenMoved) {
+        if (deltaY == 0 && Math.abs(deltaX) == 2 && !hasBeenMoved) {
+            Rook leftRookPiece = (Rook) getPieceAt(leftRook);
+            Rook rightRookPiece = (Rook) getPieceAt(rightRook);
 
-                Rook leftRookPiece = (Rook) getPieceAt(leftRook);
-                Rook rightRookPiece = (Rook) getPieceAt(rightRook);
-
-                if (deltaX == -2 && !leftRookPiece.isHasBeenMoved()) {
-                    valid = true;
-                } else if (deltaX == 2 && !rightRookPiece.isHasBeenMoved()) {
-                    valid = true;
-                }
+            if (deltaX == -2 && isPathClear(leftRook)
+                    && leftRookPiece.isHasBeenMoved()) {
+                leftRookPiece.getCoordinates().setLocation(getCoordinates().x - 1, getCoordinates().y);
+                hasBeenMoved = true;
+                valid = true;
             }
+            if (deltaX == 2 && isPathClear(rightRook)
+                    && rightRookPiece.isHasBeenMoved()) {
+                rightRookPiece.getCoordinates().setLocation(getCoordinates().x + 1, getCoordinates().y);
+                hasBeenMoved = true;
+                valid = true;
+            }
+
         }
         return valid;
     }

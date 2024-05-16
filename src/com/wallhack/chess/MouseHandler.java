@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static com.wallhack.chess.board.Board.getPieceAt;
+import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
 public class MouseHandler extends MouseAdapter {
     private int countMove = 0;
@@ -44,13 +45,13 @@ public class MouseHandler extends MouseAdapter {
             ChessPiece piece = getPieceAt(dragOffsetToPoint);
 
             if (p != null) {
-                 if (piece.isValidMove(p)) {
+                 if (piece.isValidMove(p) && isValidPosition(p)) {
                     board.deleteChessPiece(getPieceAt(p));
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);
                     countMove++;
 
-                } else {
+                } else if (isValidPosition(p)){
                     board.setPieceGrid(dragComponent, dragOffsetToPoint);
                     piece.getCoordinates().setLocation(dragOffsetToPoint);
                 }

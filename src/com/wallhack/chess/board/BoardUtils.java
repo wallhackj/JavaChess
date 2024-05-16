@@ -42,9 +42,6 @@ public class BoardUtils {
                 }
             }
         }
-
-        a
-
         return attackedSquares;
     }
 

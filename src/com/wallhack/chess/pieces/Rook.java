@@ -16,9 +16,7 @@ public class Rook extends ChessPiece{
     }
 
     public boolean isHasBeenMoved() {
-
-        a
-        return hasBeenMoved;
+        return !hasBeenMoved;
     }
 
     @Override
