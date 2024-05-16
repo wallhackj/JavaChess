@@ -38,22 +38,45 @@ public class MouseHandler extends MouseAdapter {
         }
     }
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        if (dragComponent != null) {
-            Point p = board.pointToGrid(e.getPoint());
+//    @Override
+//    public void mouseReleased(MouseEvent e) {
+//        if (dragComponent != null) {
+//            Point p = board.pointToGrid(e.getPoint());
+//            ChessPiece piece = getPieceAt(dragOffsetToPoint);
+//
+//            if (p != null) {
+//                 if (piece.isValidMove(p) && isValidPosition(p)) {
+//                    board.deleteChessPiece(getPieceAt(p));
+//                    piece.getCoordinates().setLocation(p);
+//                    board.setPieceGrid(dragComponent, p);
+//                    countMove++;
+//
+//                } else if (isValidPosition(p)){
+//                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
+//                    piece.getCoordinates().setLocation(dragOffsetToPoint);
+//                }
+//
+//                dragComponent = null;
+//                board.setHightlightCell(null);
+//            }
+//        }
+//    }
+@Override
+public void mouseReleased(MouseEvent e) {
+    if (dragComponent != null) {
+        Point p = board.pointToGrid(e.getPoint());
+
+        if (isValidPosition(dragOffsetToPoint)) {
             ChessPiece piece = getPieceAt(dragOffsetToPoint);
 
-            if (p != null) {
-                 if (piece.isValidMove(p) && isValidPosition(p)) {
+            if (piece != null && p != null) {
+                if (piece.isValidMove(p) && isValidPosition(p)) {
                     board.deleteChessPiece(getPieceAt(p));
                     piece.getCoordinates().setLocation(p);
                     board.setPieceGrid(dragComponent, p);
                     countMove++;
-
-                } else if (isValidPosition(p)){
+                } else {
                     board.setPieceGrid(dragComponent, dragOffsetToPoint);
-                    piece.getCoordinates().setLocation(dragOffsetToPoint);
                 }
 
                 dragComponent = null;
@@ -61,6 +84,8 @@ public class MouseHandler extends MouseAdapter {
             }
         }
     }
+}
+
 
     @Override
     public void mouseDragged(MouseEvent e) {
