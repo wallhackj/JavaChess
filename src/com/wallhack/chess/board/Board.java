@@ -27,7 +27,7 @@ public class Board extends JPanel {
         setLayout(new BoardLayoutManager());
         boardRender = new BoardRender(initialX, initialY, cellSize);
 
-        var FEN = "r2qk2r/2pbpp1p/1P1p1npb/2n5/8/8/P1PPPPPP/RNBQKBNR";
+        var FEN = "rnbqkbnr/pppppppp/8/8/Q7/2P5/PP1PPPPP/RNB1KBNR";
 
         pieceByDefault(FEN);
 

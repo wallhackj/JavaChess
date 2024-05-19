@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.wallhack.chess.board.Board.*;
+import static com.wallhack.chess.board.BoardUtils.isPathClear;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
 public class King extends ChessPiece {
@@ -15,22 +16,6 @@ public class King extends ChessPiece {
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
-    }
-
-    private boolean isPathClear(Point coord) {
-        var valid = true;
-        int deltaX = coord.x - getCoordinates().x;
-        int deltaY = coord.y - getCoordinates().y;
-
-        for (int i = 1; i < Math.max(Math.abs(deltaX), Math.abs(deltaY)); i++) {
-            int x = getCoordinates().x + i * Integer.compare(deltaX, 0);
-            int y = getCoordinates().y + i * Integer.compare(deltaY, 0);
-
-            if (getPieceAt(new Point(x, y)) != null) {
-                valid = false;
-            }
-        }
-        return valid;
     }
 
     @Override
@@ -45,11 +30,11 @@ public class King extends ChessPiece {
 
                     if (squaresUnderAttack().contains(target)){
                         if (pieceAt != null){
-                            if (pieceAt.getPlayer() != getPlayer()){
+                            if (pieceAt.getPlayer() != getPlayer() && !attackerIsUnderProtection(pieceAt)){
                                 validation = true;
                                 hasBeenMoved = true;
                             }
-                        }else {
+                        }else{
                             validation = true;
                             hasBeenMoved = true;
                         }
@@ -59,8 +44,6 @@ public class King extends ChessPiece {
         } else validation = true;
         return validation;
     }
-
-
 
     @Override
     public Set<Point> squaresUnderAttack() {
@@ -89,6 +72,17 @@ public class King extends ChessPiece {
         return attackedSquares;
     }
 
+    private boolean attackerIsUnderProtection(ChessPiece target) {
+        var valid = false;
+
+        for (ChessPiece piece : getPieceBox()) {
+            if (piece.squaresUnderAttack().contains(target.getCoordinates()) && piece.getPlayer() == target.getPlayer()){
+                valid = true;
+            }
+        }
+        return valid;
+    }
+
     private boolean isValidCastling(Point coord) {
 
         Point leftRook = new Point(0, getCoordinates().y);
@@ -102,13 +96,13 @@ public class King extends ChessPiece {
             Rook leftRookPiece = (Rook) getPieceAt(leftRook);
             Rook rightRookPiece = (Rook) getPieceAt(rightRook);
 
-            if (deltaX == -2 && isPathClear(leftRook)
+            if (deltaX == -2 && isPathClear(getCoordinates(),leftRook)
                     && leftRookPiece.isHasBeenMoved()) {
                 leftRookPiece.getCoordinates().setLocation(getCoordinates().x - 1, getCoordinates().y);
                 hasBeenMoved = true;
                 valid = true;
             }
-            if (deltaX == 2 && isPathClear(rightRook)
+            if (deltaX == 2 && isPathClear(getCoordinates(),rightRook)
                     && rightRookPiece.isHasBeenMoved()) {
                 rightRookPiece.getCoordinates().setLocation(getCoordinates().x + 1, getCoordinates().y);
                 hasBeenMoved = true;

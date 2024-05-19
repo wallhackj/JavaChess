@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import static com.wallhack.chess.GameStateVerifier.*;
+import static com.wallhack.chess.GameStates.*;
 import static com.wallhack.chess.board.Board.getPieceAt;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
@@ -32,60 +34,20 @@ public class MouseHandler extends MouseAdapter {
         Component comp = getBoard().getComponentAt(e.getPoint());
         ChessPiece piece = getPieceAt(getBoard().pointToGrid(comp.getLocation()));
 
-        if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
-                || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
+        System.out.println(gameState());
+        System.out.println(getPiecesForSavingKing());
+        if (gameState() == ONGOING){
+            if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
+                    || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
                 setPieceMoves(comp, e);
-        }
-    }
-
-//    @Override
-//    public void mouseReleased(MouseEvent e) {
-//        if (dragComponent != null) {
-//            Point p = board.pointToGrid(e.getPoint());
-//            ChessPiece piece = getPieceAt(dragOffsetToPoint);
-//
-//            if (p != null) {
-//                 if (piece.isValidMove(p) && isValidPosition(p)) {
-//                    board.deleteChessPiece(getPieceAt(p));
-//                    piece.getCoordinates().setLocation(p);
-//                    board.setPieceGrid(dragComponent, p);
-//                    countMove++;
-//
-//                } else if (isValidPosition(p)){
-//                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
-//                    piece.getCoordinates().setLocation(dragOffsetToPoint);
-//                }
-//
-//                dragComponent = null;
-//                board.setHightlightCell(null);
-//            }
-//        }
-//    }
-@Override
-public void mouseReleased(MouseEvent e) {
-    if (dragComponent != null) {
-        Point p = board.pointToGrid(e.getPoint());
-
-        if (isValidPosition(dragOffsetToPoint)) {
-            ChessPiece piece = getPieceAt(dragOffsetToPoint);
-
-            if (piece != null && p != null) {
-                if (piece.isValidMove(p) && isValidPosition(p)) {
-                    board.deleteChessPiece(getPieceAt(p));
-                    piece.getCoordinates().setLocation(p);
-                    board.setPieceGrid(dragComponent, p);
-                    countMove++;
-                } else {
-                    board.setPieceGrid(dragComponent, dragOffsetToPoint);
-                }
-
-                dragComponent = null;
-                board.setHightlightCell(null);
+            }
+        }else if (gameState() == CHECK_TO_BLACK_KING
+                || gameState() == CHECK_TO_WHITE_KING){
+            if (getPiecesForSavingKing().contains(piece)){
+                setPieceMoves(comp, e);
             }
         }
     }
-}
-
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -103,6 +65,36 @@ public void mouseReleased(MouseEvent e) {
                 dragComponent.setLocation(dragPoint);
             }
             board.setHightlightCell(grid);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (dragComponent != null) {
+            Point p = board.pointToGrid(e.getPoint());
+
+            if (isValidPosition(dragOffsetToPoint)) {
+                ChessPiece piece = getPieceAt(dragOffsetToPoint);
+
+                if (piece != null && p != null) {
+                    if (piece.isValidMove(p) && isValidPosition(p)) {
+                        // Elimina piesa de la destinatie daca exista
+                        board.deleteChessPiece(getPieceAt(p));
+
+                        // Mutare piesa la destinatie
+                        piece.getCoordinates().setLocation(p);
+                        board.setPieceGrid(dragComponent, p);
+                        countMove++;
+                    } else {
+                        // Daca mutarea nu este valida, revenire la pozitia initiala
+                        board.setPieceGrid(dragComponent, dragOffsetToPoint);
+                    }
+
+                    // Reseteaza componenta trasa si evidentierea celulei
+                    dragComponent = null;
+                    board.setHightlightCell(null);
+                }
+            }
         }
     }
 
