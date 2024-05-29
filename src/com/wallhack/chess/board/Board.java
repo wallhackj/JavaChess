@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.JLabel;
 
+
 public class Board extends JPanel {
     private final PieceFactory pieceFactory = new PieceFactory();
-    private final static ArrayList<ChessPiece> pieceBox = new ArrayList<>();
+    private final ArrayList<ChessPiece> pieceBox = new ArrayList<>();
     private final ArrayList<JLabel> pieceLabels = new ArrayList<>();
     private final int cellSize = 80;
     private final int initialX = 63;
@@ -27,19 +28,20 @@ public class Board extends JPanel {
         setLayout(new BoardLayoutManager());
         boardRender = new BoardRender(initialX, initialY, cellSize);
 
-        var FEN = "rnbqkbnr/pppppppp/8/8/Q7/2P5/PP1PPPPP/RNB1KBNR";
+        var FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
         pieceByDefault(FEN);
 
         placePiece();
 
+        BoardUtils boardUtils = new BoardUtils(this);
+
         MouseHandler mouseHandler = new MouseHandler(this);
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
-
     }
 
-    public static ArrayList<ChessPiece> getPieceBox() {
+    public ArrayList<ChessPiece> getPieceBoxDirectly() {
         return pieceBox;
     }
 
@@ -153,17 +155,6 @@ public class Board extends JPanel {
             highlightCell = p;
             repaint();
         }
-    }
-
-    public static ChessPiece getPieceAt(Point coordinates){
-        ChessPiece myPiece = null;
-
-        for (ChessPiece piece : pieceBox){
-            if (piece.getCoordinates().x == coordinates.x && coordinates.y == piece.getCoordinates().y){
-                myPiece = piece;
-            }
-        }
-        return myPiece;
     }
 
     public void deleteChessPiece(ChessPiece piece) {

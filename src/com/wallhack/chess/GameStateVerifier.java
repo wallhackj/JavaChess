@@ -8,8 +8,6 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
-import static com.wallhack.chess.board.Board.getPieceBox;
 import static com.wallhack.chess.board.BoardUtils.*;
 
 public class GameStateVerifier {
@@ -20,7 +18,7 @@ public class GameStateVerifier {
         return piecesForSavingKing;
     }
 
-    public static GameStates gameState() {
+    public GameStates gameState() {
         for (ChessPiece piece : getPieceBox()) {
             for (Point point : piece.squaresUnderAttack()) {
                 ChessPiece attackedPiece = getPieceAt(point);
@@ -45,7 +43,7 @@ public class GameStateVerifier {
         return GameStates.ONGOING;
     }
 
-    private static boolean canBeSaved(Point checkPosition) {
+    private boolean canBeSaved(Point checkPosition) {
         if (!piecesWhichCanSave(checkPosition).isEmpty()){
             piecesForSavingKing.addAll(piecesWhichCanSave(checkPosition));
             return true;
@@ -53,24 +51,20 @@ public class GameStateVerifier {
         return false;
     }
 
-    private static Set<ChessPiece> piecesWhichCanSave(Point checkPosition) {
+    private Set<ChessPiece> piecesWhichCanSave(Point checkPosition) {
         Set<ChessPiece> saviors = new HashSet<>();
 
-        // Get the piece that is attacking the king
         ChessPiece attackingPiece = getPieceAt(checkPosition);
         if (attackingPiece == null) {
-            return saviors; // Should not happen, but safeguard just in case
+            return saviors;
         }
 
-        // Find all pieces that can capture the attacking piece or block the path
         for (ChessPiece piece : getPieceBox()) {
             if (piece.getPlayer() == king.getPlayer()) {
-                // Capture the attacking piece
                 if (piece.isValidMove(checkPosition)) {
                     saviors.add(piece);
                 }
 
-                // Block the path (excluding Knights)
                 if (!(attackingPiece instanceof Knight)) {
                     Set<Point> pathPoints = new HashSet<>();
                     pathPoints.addAll(getPathPoints(king.getCoordinates(), checkPosition));
@@ -85,7 +79,6 @@ public class GameStateVerifier {
             }
         }
 
-        // Check if the king can move to a safe square
         for (Point move : king.squaresUnderAttack()) {
             if (king.isValidMove(move) && !isSquareUnderAttack(move, king.getPlayer())) {
                 saviors.add(king);
@@ -96,7 +89,7 @@ public class GameStateVerifier {
         return saviors;
     }
 
-    private static boolean isSquareUnderAttack(Point square, Player player) {
+    private boolean isSquareUnderAttack(Point square, Player player) {
         for (ChessPiece piece : getPieceBox()) {
             if (piece.getPlayer() != player && piece.squaresUnderAttack().contains(square)) {
                 return true;

@@ -7,7 +7,8 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
+
+import static com.wallhack.chess.board.BoardUtils.getPieceAt;
 import static com.wallhack.chess.board.BoardUtils.isNotKing;
 
 

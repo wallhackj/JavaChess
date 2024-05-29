@@ -7,7 +7,6 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
 import static com.wallhack.chess.board.BoardUtils.*;
 
 public class Pawn extends ChessPiece {

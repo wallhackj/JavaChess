@@ -7,9 +7,7 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.*;
-import static com.wallhack.chess.board.BoardUtils.isPathClear;
-import static com.wallhack.chess.board.BoardUtils.isValidPosition;
+import static com.wallhack.chess.board.BoardUtils.*;
 
 public class King extends ChessPiece {
     private boolean hasBeenMoved = false;

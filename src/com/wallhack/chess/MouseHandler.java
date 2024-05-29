@@ -6,43 +6,41 @@ import com.wallhack.chess.pieces.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import static com.wallhack.chess.GameStateVerifier.*;
 import static com.wallhack.chess.GameStates.*;
-import static com.wallhack.chess.board.Board.getPieceAt;
+import static com.wallhack.chess.board.BoardUtils.getPieceAt;
 import static com.wallhack.chess.board.BoardUtils.isValidPosition;
 
 public class MouseHandler extends MouseAdapter {
     private int countMove = 0;
     private Component dragComponent;
-    private final Board board;
     private Point dragOffset;
     public static final boolean SNAP_TO_GRID = false;
     private Point dragOffsetToPoint;
+    private final GameStateVerifier gameStateVerifier;
+    private final Board board;
+
+    public MouseHandler(Board board) {
+        this.board = board;
+        gameStateVerifier = new GameStateVerifier();
+    }
 
     public Board getBoard() {
         return board;
     }
-
-    public MouseHandler(Board board) {
-        this.board = board;
-    }
-
 
     @Override
     public void mousePressed(MouseEvent e) {
         Component comp = getBoard().getComponentAt(e.getPoint());
         ChessPiece piece = getPieceAt(getBoard().pointToGrid(comp.getLocation()));
 
-        System.out.println(gameState());
-        System.out.println(getPiecesForSavingKing());
-        if (gameState() == ONGOING){
+        if (gameStateVerifier.gameState() == ONGOING){
             if ((countMove % 2 == 0 && piece.getPlayer() == Player.White)
                     || (countMove % 2 == 1 && piece.getPlayer() == Player.Black)) {
                 setPieceMoves(comp, e);
             }
-        }else if (gameState() == CHECK_TO_BLACK_KING
-                || gameState() == CHECK_TO_WHITE_KING){
+        }else if (gameStateVerifier.gameState() == CHECK_TO_BLACK_KING
+                || gameStateVerifier.gameState() == CHECK_TO_WHITE_KING){
             if (getPiecesForSavingKing().contains(piece)){
                 setPieceMoves(comp, e);
             }
@@ -78,19 +76,13 @@ public class MouseHandler extends MouseAdapter {
 
                 if (piece != null && p != null) {
                     if (piece.isValidMove(p) && isValidPosition(p)) {
-                        // Elimina piesa de la destinatie daca exista
                         board.deleteChessPiece(getPieceAt(p));
-
-                        // Mutare piesa la destinatie
                         piece.getCoordinates().setLocation(p);
                         board.setPieceGrid(dragComponent, p);
                         countMove++;
                     } else {
-                        // Daca mutarea nu este valida, revenire la pozitia initiala
                         board.setPieceGrid(dragComponent, dragOffsetToPoint);
                     }
-
-                    // Reseteaza componenta trasa si evidentierea celulei
                     dragComponent = null;
                     board.setHightlightCell(null);
                 }
