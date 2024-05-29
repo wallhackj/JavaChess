@@ -4,50 +4,36 @@ import com.wallhack.chess.Player;
 import com.wallhack.chess.Rank;
 
 import java.awt.*;
-import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
+import static com.wallhack.chess.board.BoardUtils.getPointSet;
 
 public class Rook extends ChessPiece{
+    private boolean hasBeenMoved = false;
 
     public Rook(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
     }
 
+    public boolean isHasBeenMoved() {
+        return !hasBeenMoved;
+    }
+
     @Override
     public boolean isValidMove(Point target) {
-        ChessPiece piece = getPieceAt(target);
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
-        boolean validation = false;
-
-        if (piece == null || piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece)){
-            if (target.x == getCoordinates().x || target.y == getCoordinates().y) {
-                if (isPathClear(getCoordinates(), target)) {
-                    movedPieces.add(initialPiece);
-                    validation = true;
-                }
-            }
+        if (super.isValidMove(target)){
+            hasBeenMoved = true;
         }
-        return validation;
+        return super.isValidMove(target);
     }
 
     @Override
     public Set<Point> squaresUnderAttack() {
-        Set<Point> attackedSquares = new HashSet<>();
+        int[][] verticalDirections = {
+                {1, 0}, {0, -1}, {-1, 0}, {0, 1}
+        };
 
-        for (int x = 0; x < 8; x++) {
-            if (x != getCoordinates().x) {
-                attackedSquares.add(new Point(x, getCoordinates().y));
-            }
-        }
-        for (int y = 0; y < 8; y++) {
-            if (y != getCoordinates().y) {
-                attackedSquares.add(new Point(getCoordinates().x, y));
-            }
-        }
-        return attackedSquares;
+        return getPointSet(verticalDirections, this);
     }
-
 
 }

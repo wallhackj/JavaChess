@@ -7,11 +7,10 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.wallhack.chess.board.Board.getPieceAt;
-import static com.wallhack.chess.board.Board.isValidPosition;
+import static com.wallhack.chess.board.BoardUtils.*;
 
-public class King extends ChessPiece{
-    private ChessPiece rook;
+public class King extends ChessPiece {
+    private boolean hasBeenMoved = false;
 
     public King(Player player, Rank rank, String pictureName, Point coordinates) {
         super(player, rank, pictureName, coordinates);
@@ -19,19 +18,28 @@ public class King extends ChessPiece{
 
     @Override
     public boolean isValidMove(Point target) {
-        ChessPiece piece = getPieceAt(target);
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
         var validation = false;
+        ChessPiece pieceAt = getPieceAt(target);
 
-        if (piece == null || (piece.getPlayer() != initialPiece.getPlayer() && isNotKing(piece))) {
-            var deltaX = Math.abs(getCoordinates().x - target.x);
-            var deltaY = Math.abs(getCoordinates().y - target.y);
+        if (!isValidCastling(target)){
+            for (ChessPiece piece : getPieceBox()) {
+                if (!piece.squaresUnderAttack().contains(target)
+                        && piece.getPlayer() != getPlayer()) {
 
-            if ((deltaX == 1 && deltaY == 0) || (deltaX == 0 && deltaY == 1) || (deltaX == 1 && deltaY == 1)) {
-                movedPieces.add(initialPiece);
-                validation = true;
+                    if (squaresUnderAttack().contains(target)){
+                        if (pieceAt != null){
+                            if (pieceAt.getPlayer() != getPlayer() && !attackerIsUnderProtection(pieceAt)){
+                                validation = true;
+                                hasBeenMoved = true;
+                            }
+                        }else{
+                            validation = true;
+                            hasBeenMoved = true;
+                        }
+                    }
+                }
             }
-        }
+        } else validation = true;
         return validation;
     }
 
@@ -62,12 +70,19 @@ public class King extends ChessPiece{
         return attackedSquares;
     }
 
-    public void setRook(ChessPiece rook) {
-        this.rook = rook;
+    private boolean attackerIsUnderProtection(ChessPiece target) {
+        var valid = false;
+
+        for (ChessPiece piece : getPieceBox()) {
+            if (piece.squaresUnderAttack().contains(target.getCoordinates()) && piece.getPlayer() == target.getPlayer()){
+                valid = true;
+            }
+        }
+        return valid;
     }
 
-    private boolean isValidCasling(Point coord) {
-        ChessPiece initialPiece = getPieceAt(getCoordinates());
+    private boolean isValidCastling(Point coord) {
+
         Point leftRook = new Point(0, getCoordinates().y);
         Point rightRook = new Point(7, getCoordinates().y);
 
@@ -75,19 +90,25 @@ public class King extends ChessPiece{
         var deltaX = coord.x - getCoordinates().x;
         var deltaY = coord.y - getCoordinates().y;
 
-        if (deltaY == 0 && Math.abs(deltaX) == 2) {
-            if (isPathClear(coord, getCoordinates()) && pieceIsMoved(initialPiece)) {
-                ChessPiece leftRookPiece = getPieceAt(leftRook);
-                ChessPiece rightRookPiece = getPieceAt(rightRook);
-                if (deltaX == -2 && pieceIsMoved(leftRookPiece)) {
-                    valid = true;
-                    rook = leftRookPiece;
-                }else if (deltaX == 2 && pieceIsMoved(rightRookPiece)){
-                    valid = true;
-                    rook = rightRookPiece;
-                }
+        if (deltaY == 0 && Math.abs(deltaX) == 2 && !hasBeenMoved) {
+            Rook leftRookPiece = (Rook) getPieceAt(leftRook);
+            Rook rightRookPiece = (Rook) getPieceAt(rightRook);
+
+            if (deltaX == -2 && isPathClear(getCoordinates(),leftRook)
+                    && leftRookPiece.isHasBeenMoved()) {
+                leftRookPiece.getCoordinates().setLocation(getCoordinates().x - 1, getCoordinates().y);
+                hasBeenMoved = true;
+                valid = true;
             }
+            if (deltaX == 2 && isPathClear(getCoordinates(),rightRook)
+                    && rightRookPiece.isHasBeenMoved()) {
+                rightRookPiece.getCoordinates().setLocation(getCoordinates().x + 1, getCoordinates().y);
+                hasBeenMoved = true;
+                valid = true;
+            }
+
         }
         return valid;
     }
+
 }

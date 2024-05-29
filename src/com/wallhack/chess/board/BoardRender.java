@@ -32,8 +32,8 @@ public class BoardRender {
     }
 
     public void drawLabel(Graphics2D g2){
-        char[] litere = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-        char[] cifre = {'1', '2', '3', '4', '5', '6', '7', '8'};
+        char[] horizontally = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+        char[] vertically = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
         Font font = new Font("default", Font.BOLD, 20);
         g2.setFont(font);
@@ -41,12 +41,12 @@ public class BoardRender {
         var pozitionX = initialX;
         var pozitionY = initialY;
 
-        for(int i = 0; i < litere.length; i++){
-            g2.drawChars(litere, i, 1, pozitionX + 30, pozitionY - 10);
+        for(int i = 0; i < horizontally.length; i++){
+            g2.drawChars(horizontally, i, 1, pozitionX + 30, pozitionY - 10);
             pozitionX += 80;
         }
-        for(int i = 0; i < cifre.length; i++){
-            g2.drawChars(cifre, i, 1, pozitionX - 670, pozitionY + 45);
+        for(int i = 0; i < vertically.length; i++){
+            g2.drawChars(vertically, i, 1, pozitionX - 670, pozitionY + 45);
             pozitionY += 80;
         }
     }
